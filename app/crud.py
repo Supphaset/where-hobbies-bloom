@@ -244,6 +244,5 @@ def update_vocab_progress(db: Session, user_id: int, vocab_id: int, correct: boo
 def grade_speaking(transcript: str) -> dict:
     return ai_utils.grade_speaking(transcript)
 
-
 def speaking_feedback(audio_bytes: bytes) -> dict:
     return ai_utils.speaking_feedback(audio_bytes)

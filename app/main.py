@@ -260,10 +260,10 @@ def quick_speak_submit(submission: schemas.SpeakSubmission, db: Session = Depend
     crud.record_study_session(db, submission.user_id, 1)
     return {"feedback": feedback}
 
-
 @app.post("/feedback/speaking")
 async def speaking_feedback(user_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
     data = await file.read()
     feedback = crud.speaking_feedback(data)
     crud.record_study_session(db, user_id, 1)
     return feedback
+
