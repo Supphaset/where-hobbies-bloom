@@ -1,8 +1,8 @@
-from fastapi.testclient import TestClient
+from tests.utils import SyncClient
 
 from app.main import app
 
-client = TestClient(app)
+client = SyncClient(app)
 
 def test_ping():
     response = client.get("/ping")
