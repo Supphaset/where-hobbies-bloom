@@ -2,8 +2,9 @@ import CreateUser from './components/CreateUser.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import Exams from './components/Exams.jsx';
 import PracticeDrills from './components/PracticeDrills.jsx';
+import Layout from './Layout.jsx';
 
-const { HashRouter, Route, Switch, NavLink, Redirect } = ReactRouterDOM;
+const { HashRouter, Route, Switch, Redirect } = ReactRouterDOM;
 
 export default function App() {
   const [user, setUser] = React.useState(null);
@@ -17,17 +18,14 @@ export default function App() {
 
   return (
     <HashRouter>
-      <nav>
-        <NavLink exact to="/" activeClassName="active">Dashboard</NavLink>{' | '}
-        <NavLink to="/exams" activeClassName="active">Exams</NavLink>{' | '}
-        <NavLink to="/practice" activeClassName="active">Practice</NavLink>
-      </nav>
-      <Switch>
-        <Route path="/setup" render={() => <CreateUser onCreated={setUser} />} />
-        <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <Redirect to="/setup" />} />
-        <Route path="/exams" render={() => user ? <Exams user={user} /> : <Redirect to="/setup" />} />
-        <Route path="/practice" render={() => user ? <PracticeDrills user={user} /> : <Redirect to="/setup" />} />
-      </Switch>
+      <Layout>
+        <Switch>
+          <Route path="/setup" render={() => <CreateUser onCreated={setUser} />} />
+          <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <Redirect to="/setup" />} />
+          <Route path="/exams" render={() => user ? <Exams user={user} /> : <Redirect to="/setup" />} />
+          <Route path="/practice" render={() => user ? <PracticeDrills user={user} /> : <Redirect to="/setup" />} />
+        </Switch>
+      </Layout>
     </HashRouter>
   );
 }
