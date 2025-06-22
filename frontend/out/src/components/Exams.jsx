@@ -13,7 +13,9 @@ export default function Exams({
     Writing: 60
   };
   const [timeLeft, setTimeLeft] = React.useState(DURATIONS[section]);
+  const [started, setStarted] = React.useState(false);
   React.useEffect(() => {
+    if (!started) return;
     if (section === 'Writing') {
       fetch('/exams/IELTS/Writing').then(res => res.json()).then(data => {
         setTest(data);
@@ -29,10 +31,10 @@ export default function Exams({
         setResult(null);
       });
     }
-  }, [section]);
+  }, [section, started]);
   React.useEffect(() => {
     let timer;
-    if (test) {
+    if (test && started) {
       setTimeLeft(DURATIONS[section]);
       timer = setInterval(() => {
         setTimeLeft(prev => {
@@ -45,7 +47,7 @@ export default function Exams({
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [test, section]);
+  }, [test, section, started]);
   const handleSubmit = () => {
     if (section === 'Writing') {
       fetch('/exams/IELTS/Writing/submit', {
@@ -82,6 +84,32 @@ export default function Exams({
     }
   };
   if (!user) return /*#__PURE__*/React.createElement("p", null, "Please create your profile first.");
+  if (!started) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "mt-4"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label"
+    }, "Section", /*#__PURE__*/React.createElement("select", {
+      className: "form-select",
+      value: section,
+      onChange: e => {
+        setSection(e.target.value);
+        setStarted(false);
+        setTest(null);
+      }
+    }, /*#__PURE__*/React.createElement("option", {
+      value: "Reading"
+    }, "Reading"), /*#__PURE__*/React.createElement("option", {
+      value: "Listening"
+    }, "Listening"), /*#__PURE__*/React.createElement("option", {
+      value: "Writing"
+    }, "Writing")))), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setStarted(true),
+      className: "btn btn-primary"
+    }, "Start"));
+  }
   if (!test) return /*#__PURE__*/React.createElement("p", null, "Loading...");
   return /*#__PURE__*/React.createElement("div", {
     className: "mt-4"
@@ -92,7 +120,11 @@ export default function Exams({
   }, "Section", /*#__PURE__*/React.createElement("select", {
     className: "form-select",
     value: section,
-    onChange: e => setSection(e.target.value)
+    onChange: e => {
+      setSection(e.target.value);
+      setStarted(false);
+      setTest(null);
+    }
   }, /*#__PURE__*/React.createElement("option", {
     value: "Reading"
   }, "Reading"), /*#__PURE__*/React.createElement("option", {
@@ -101,7 +133,7 @@ export default function Exams({
     value: "Writing"
   }, "Writing")))), /*#__PURE__*/React.createElement("h2", {
     className: "mb-3"
-  }, test.title), /*#__PURE__*/React.createElement("p", null, "Time left: ", timeLeft, "s"), section === 'Writing' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, test.prompt), /*#__PURE__*/React.createElement("textarea", {
+  }, test.title), started && /*#__PURE__*/React.createElement("p", null, "Time left: ", timeLeft, "s"), section === 'Writing' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, test.prompt), /*#__PURE__*/React.createElement("textarea", {
     value: essay,
     onChange: e => setEssay(e.target.value),
     rows: 10,
@@ -128,7 +160,7 @@ export default function Exams({
   }, opt))))), /*#__PURE__*/React.createElement("button", {
     onClick: handleSubmit,
     className: "btn btn-primary mt-3",
-    disabled: timeLeft === 0
+    disabled: !started || timeLeft === 0
   }, "Submit"), score !== null && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Your score: ", score)), result && section === 'Writing' && /*#__PURE__*/React.createElement("pre", null, JSON.stringify(result.feedback, null, 2)), result && section !== 'Writing' && /*#__PURE__*/React.createElement("ul", null, result.answers.map(a => /*#__PURE__*/React.createElement("li", {
     key: a.question_id
   }, "Q", a.question_id, ": ", a.correct ? '✓' : '✗', " (you: ", a.response, ")")))));
