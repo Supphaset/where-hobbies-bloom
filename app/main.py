@@ -1,5 +1,4 @@
 from pathlib import Path
-import random
 import json
 
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
@@ -10,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from .database import engine, SessionLocal
 from . import models, schemas, crud
-from .ai_utils import grade_essay
+from .ai_utils import grade_essay, generate_mc_question, generate_prompt
 from scripts.import_content import import_from_data
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -263,7 +262,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 def get_writing_prompt():
     return {
         "title": "IELTS Writing",
-        "prompt": "Describe a memorable journey you have taken.",
+        "prompt": generate_prompt("writing"),
     }
 
 
@@ -281,9 +280,30 @@ def submit_writing(submission: schemas.EssaySubmission, db: Session = Depends(ge
 
 @app.get("/exams/{exam_type}/{section}", response_model=schemas.Test)
 def get_exam(exam_type: str, section: str, db: Session = Depends(get_db)):
-    test = crud.get_test(db, exam_type, section)
-    if not test:
-        raise HTTPException(status_code=404, detail="Test not found")
+    skill = "hanzi" if section.lower() == "characters" else section.lower()
+    test = models.Test(
+        exam_type=exam_type,
+        level=1,
+        section=section,
+        title=f"Generated {section}",
+    )
+    db.add(test)
+    db.commit()
+    db.refresh(test)
+    questions = []
+    for _ in range(5):
+        qd = generate_mc_question(skill)
+        q = models.Question(
+            test_id=test.id,
+            prompt=qd["prompt"],
+            options_json=json.dumps(qd["options"]),
+            answer_key=qd["answer_key"],
+            skill_code=skill,
+        )
+        db.add(q)
+        questions.append(q)
+    db.commit()
+    db.refresh(test)
     return test
 
 
@@ -345,30 +365,18 @@ def review_vocab_drill(
     return {"status": "ok"}
 
 
-GRAMMAR_QUESTIONS = [
-    {
-        "id": 1,
-        "prompt": "Choose the correct form: She ____ to school every day.",
-        "options": ["go", "goes", "going"],
-        "answer_key": "goes",
-    },
-    {
-        "id": 2,
-        "prompt": "Which sentence is correct?",
-        "options": [
-            "He don't like apples",
-            "He doesn't like apples",
-            "He doesn't likes apples",
-        ],
-        "answer_key": "He doesn't like apples",
-    },
-]
+GENERATED_GRAMMAR: dict[int, dict] = {}
+_GRAMMAR_ID = 1
 
 
 @app.get("/drills/grammar/{user_id}")
 def grammar_question(user_id: int) -> dict:
-    question = random.choice(GRAMMAR_QUESTIONS)
-    return question
+    global _GRAMMAR_ID
+    q = generate_mc_question("grammar")
+    q["id"] = _GRAMMAR_ID
+    GENERATED_GRAMMAR[_GRAMMAR_ID] = q
+    _GRAMMAR_ID += 1
+    return q
 
 
 @app.post("/drills/grammar/{user_id}/{question_id}")
@@ -378,7 +386,7 @@ def grammar_answer(
     answer: schemas.GrammarAnswer,
     db: Session = Depends(get_db),
 ):
-    q = next((q for q in GRAMMAR_QUESTIONS if q["id"] == question_id), None)
+    q = GENERATED_GRAMMAR.pop(question_id, None)
     correct = bool(q and answer.answer == q["answer_key"])
     score = 100 if correct else 0
     crud.update_skill_profile(db, user_id, "grammar", score)
@@ -386,15 +394,9 @@ def grammar_answer(
     return {"correct": correct}
 
 
-WRITING_PROMPTS = [
-    "Describe your favorite hobby.",
-    "What is the best book you've read recently?",
-]
-
-
 @app.get("/drills/quick-write")
 def quick_write_prompt():
-    return {"prompt": random.choice(WRITING_PROMPTS)}
+    return {"prompt": generate_prompt("writing")}
 
 
 @app.post("/drills/quick-write/submit", response_model=schemas.EssayAttempt)
@@ -404,15 +406,9 @@ def quick_write_submit(submission: schemas.EssaySubmission, db: Session = Depend
     return {"id": attempt.id, "score": attempt.score, "feedback": feedback}
 
 
-SPEAK_PROMPTS = [
-    "Talk about your hometown.",
-    "Explain a recent challenge you faced.",
-]
-
-
 @app.get("/drills/quick-speak")
 def quick_speak_prompt():
-    return {"prompt": random.choice(SPEAK_PROMPTS)}
+    return {"prompt": generate_prompt("speaking")}
 
 
 @app.post("/drills/quick-speak/submit")
