@@ -1,8 +1,8 @@
-from fastapi.testclient import TestClient
+from tests.utils import SyncClient
 
 from app.main import app
 
-client = TestClient(app)
+client = SyncClient(app)
 
 def test_create_user():
     response = client.post("/users/", json={"name": "Alice", "target_ielts": 7, "target_hsk": 180})
