@@ -14,19 +14,33 @@ def test_get_exam():
 
 def test_submit_exam_and_dashboard_ready():
     exam = client.get('/exams/IELTS/Reading').json()
-    answers = [{'question_id': q['id'], 'response': q['answer_key']} for q in exam['questions']]
-    client.post('/users/', json={'name': 'Test', 'target_ielts': 7, 'target_hsk': 180})
+    answers = [
+        {'question_id': q['id'], 'response': q['answer_key']} for q in exam['questions']
+    ]
+    user_resp = client.post(
+        '/users/', json={'name': 'Test', 'target_ielts': 7, 'target_hsk': 180}
+    )
+    user_id = user_resp.json()['id']
     # submit two perfect attempts
     for _ in range(2):
-        resp = client.post('/exams/IELTS/Reading/submit', json={'user_id': 1, 'answers': answers})
+        resp = client.post(
+            '/exams/IELTS/Reading/submit', json={'user_id': user_id, 'answers': answers}
+        )
         assert resp.status_code == 200
-    dash = client.get('/dashboard/1').json()
+    dash = client.get(f'/dashboard/{user_id}').json()
     assert dash['exam_ready']['ielts'] is True
 
 
 def test_listening_exam_scoring():
     exam = client.get('/exams/IELTS/Listening').json()
-    answers = [{'question_id': q['id'], 'response': q['answer_key']} for q in exam['questions']]
-    resp = client.post('/exams/IELTS/Listening/submit', json={'user_id': 1, 'answers': answers})
+    answers = [
+        {'question_id': q['id'], 'response': q['answer_key']} for q in exam['questions']
+    ]
+    user_id = client.post(
+        '/users/', json={'name': 'Listener', 'target_ielts': 6, 'target_hsk': 150}
+    ).json()['id']
+    resp = client.post(
+        '/exams/IELTS/Listening/submit', json={'user_id': user_id, 'answers': answers}
+    )
     assert resp.status_code == 200
     assert resp.json()['score'] == 100

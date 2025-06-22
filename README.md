@@ -27,7 +27,10 @@ This repository contains a small [FastAPI](https://fastapi.tiangolo.com/) applic
    - `GET /dashboard/{user_id}` – show skill profile and exam-ready status.
 
 3. **Run tests** *(optional)*
+   Ensure dependencies are installed first since the tests use `httpx` for the
+   synchronous client.
    ```bash
+   pip install -r requirements.txt
    pytest -q
    ```
 
