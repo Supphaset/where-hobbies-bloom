@@ -195,13 +195,20 @@ def study_time_trend(db: Session, user_id: int, days: int = 7) -> list[dict]:
 
 
 def recommend_tasks(db: Session, user: models.User, top_n: int = 3) -> list[str]:
+    """Return a list of practice suggestions sorted by mastery gap."""
     profile = (
         db.query(models.SkillProfile)
         .filter(models.SkillProfile.user_id == user.id)
         .all()
     )
-    gaps = sorted(profile, key=lambda p: p.mastery_pct)
-    return [f"Practice {p.skill_code.title()}" for p in gaps[:top_n]]
+    english = {"reading", "listening", "writing", "speaking"}
+    skill_gaps: list[tuple[float, str]] = []
+    for p in profile:
+        target = user.target_ielts * 10 if p.skill_code in english else user.target_hsk
+        gap = target - p.mastery_pct
+        skill_gaps.append((gap, p.skill_code))
+    skill_gaps.sort(key=lambda g: g[0], reverse=True)
+    return [f"Practice {code.title()}" for _, code in skill_gaps[:top_n]]
 
 
 def next_vocab_item(db: Session, user_id: int) -> models.Vocabulary | None:
