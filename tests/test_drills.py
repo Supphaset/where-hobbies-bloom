@@ -19,3 +19,13 @@ def test_quick_write():
     assert 'prompt' in prompt
     resp = client.post('/drills/quick-write/submit', json={'user_id': user['id'], 'text': 'Hello world'}).json()
     assert 'score' in resp and 'feedback' in resp
+
+
+def test_speaking_feedback():
+    user = client.post('/users/', json={'name': 'Speaker', 'target_ielts': 6, 'target_hsk': 160}).json()
+    audio = b''  # empty audio just to trigger fallback
+    files = {'file': ('speech.wav', audio, 'audio/wav')}
+    resp = client.post(f'/feedback/speaking?user_id={user["id"]}', files=files)
+    data = resp.json()
+    assert resp.status_code == 200
+    assert 'fluency_band' in data
