@@ -1,3 +1,4 @@
+
 const _jsxFileName = "frontend/src/components/CreateUser.jsx";export default function CreateUser({ onCreated }) {
   const [name, setName] = React.useState('');
   const [ielts, setIelts] = React.useState(6);
