@@ -38,7 +38,8 @@ def record_attempt(
     db.commit()
     db.refresh(attempt)
     for ans in answers:
-        q = db.query(models.Question).get(ans.question_id)
+        # SQLAlchemy 2.x recommends Session.get rather than Query.get
+        q = db.get(models.Question, ans.question_id)
         is_correct = q and q.answer_key == ans.response
         db.add(
             models.Answer(
