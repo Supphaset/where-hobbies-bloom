@@ -1,5 +1,6 @@
 from pathlib import Path
 import random
+import json
 
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
@@ -10,6 +11,7 @@ from sqlalchemy.orm import Session
 from .database import engine, SessionLocal
 from . import models, schemas, crud
 from .ai_utils import grade_essay
+from scripts.import_content import import_from_data
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend" / "out"
@@ -425,4 +427,12 @@ async def speaking_feedback(user_id: int, file: UploadFile = File(...), db: Sess
     feedback = crud.speaking_feedback(data)
     crud.record_study_session(db, user_id, 1)
     return feedback
+
+
+@app.post("/admin/import")
+async def admin_import(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """Upload a JSON file with tests and vocab to import into the database."""
+    data = json.loads((await file.read()).decode("utf-8"))
+    import_from_data(data, db)
+    return {"status": "ok"}
 

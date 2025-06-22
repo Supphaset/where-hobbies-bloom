@@ -2,6 +2,7 @@ import CreateUser from './components/CreateUser.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import Exams from './components/Exams.jsx';
 import PracticeDrills from './components/PracticeDrills.jsx';
+import Admin from './components/Admin.jsx';
 import Layout from './Layout.jsx';
 
 const { HashRouter, Route, Switch, Redirect } = ReactRouterDOM;
@@ -24,6 +25,7 @@ export default function App() {
           <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <CreateUser onCreated={setUser} />} />
           <Route path="/exams" render={() => user ? <Exams user={user} /> : <Redirect to="/setup" />} />
           <Route path="/practice" render={() => user ? <PracticeDrills user={user} /> : <Redirect to="/setup" />} />
+          <Route path="/admin" render={() => <Admin />} />
         </Switch>
       </Layout>
     </HashRouter>
