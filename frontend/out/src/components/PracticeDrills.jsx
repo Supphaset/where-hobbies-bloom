@@ -1,8 +1,3 @@
 export default function PracticeDrills() {
-  return (
-    <div>
-      <h2>Practice Drills</h2>
-      <p>Drill activities will be available here.</p>
-    </div>
-  );
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "Practice Drills"), /*#__PURE__*/React.createElement("p", null, "Drill activities will be available here."));
 }
