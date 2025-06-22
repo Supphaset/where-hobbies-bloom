@@ -4,9 +4,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound
 
-from .database import engine, Base, SessionLocal
+from .database import engine, SessionLocal
 from . import models, schemas, crud
 
 BASE_DIR = Path(__file__).resolve().parent.parent
