@@ -45,6 +45,10 @@ export default function App() {
     })
   }), /*#__PURE__*/React.createElement(Route, {
     path: "/practice",
-    render: () => /*#__PURE__*/React.createElement(PracticeDrills, null)
+    render: () => user ? /*#__PURE__*/React.createElement(PracticeDrills, {
+      user: user
+    }) : /*#__PURE__*/React.createElement(Redirect, {
+      to: "/setup"
+    })
   })));
 }

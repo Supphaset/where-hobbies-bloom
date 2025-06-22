@@ -77,3 +77,30 @@ class EssayAttempt(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class StudySession(BaseModel):
+    id: int
+    minutes: int
+    created_at: str
+
+    class Config:
+        orm_mode = True
+
+
+class VocabItem(BaseModel):
+    id: int
+    word: str
+    definition: str
+
+    class Config:
+        orm_mode = True
+
+
+class VocabReview(BaseModel):
+    correct: bool
+
+
+class SpeakSubmission(BaseModel):
+    user_id: int
+    transcript: str

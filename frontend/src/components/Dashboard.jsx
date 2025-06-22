@@ -37,6 +37,24 @@ export default function Dashboard({ user }) {
               ))}
             </tbody>
           </table>
+          <h3>Recommended Tasks</h3>
+          <ul>
+            {data.recommended_tasks.map((t, i) => (
+              <li key={i}>{t}</li>
+            ))}
+          </ul>
+          <h3>Recent Scores</h3>
+          <ul>
+            {data.latest_scores.map((s, i) => (
+              <li key={i}>{s.label}: {s.score.toFixed(1)}</li>
+            ))}
+          </ul>
+          <h3>Study Time (Last 7 Days)</h3>
+          <ul>
+            {data.study_time.map(item => (
+              <li key={item.date}>{item.date}: {item.minutes}m</li>
+            ))}
+          </ul>
         </div>
       ) : (
         <p>Loading...</p>

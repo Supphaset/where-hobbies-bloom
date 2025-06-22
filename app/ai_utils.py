@@ -13,6 +13,13 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 SYSTEM_PROMPT = "You are a certified IELTS Writing examiner. Return JSON with task_response, coherence, lexical, grammar, and overall_band."
 
 
+def grade_speaking(transcript: str) -> Dict:
+    """Return simple fluency feedback based on word count."""
+    words = len(transcript.split())
+    band = min(9, max(5, words // 50 + 5))
+    return {"fluency_band": band}
+
+
 def grade_essay(text: str) -> Dict:
     """Grade the essay with OpenAI or return a simple heuristic result."""
     if openai and API_KEY:

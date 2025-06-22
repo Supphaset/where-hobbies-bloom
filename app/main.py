@@ -1,4 +1,5 @@
 from pathlib import Path
+import random
 
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
@@ -27,65 +28,74 @@ app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 def seed_content(db: Session) -> None:
     """Create sample IELTS reading and listening tests if none exist."""
     if db.query(models.Test).first():
-        return
+        pass
+    else:
+        reading = models.Test(
+            exam_type="IELTS",
+            level=1,
+            section="Reading",
+            title="Sample Reading",
+        )
+        db.add(reading)
+        db.commit()
+        db.refresh(reading)
+        reading_questions = [
+            models.Question(
+                test_id=reading.id,
+                prompt="What is 2 + 2?",
+                options_json='["3", "4", "5"]',
+                answer_key="4",
+                skill_code="reading",
+            ),
+            models.Question(
+                test_id=reading.id,
+                prompt="Capital of France?",
+                options_json='["London", "Paris", "Berlin"]',
+                answer_key="Paris",
+                skill_code="reading",
+            ),
+        ]
+        db.add_all(reading_questions)
+        db.commit()
 
-    reading = models.Test(
-        exam_type="IELTS",
-        level=1,
-        section="Reading",
-        title="Sample Reading",
-    )
-    db.add(reading)
-    db.commit()
-    db.refresh(reading)
-    reading_questions = [
-        models.Question(
-            test_id=reading.id,
-            prompt="What is 2 + 2?",
-            options_json='["3", "4", "5"]',
-            answer_key="4",
-            skill_code="reading",
-        ),
-        models.Question(
-            test_id=reading.id,
-            prompt="Capital of France?",
-            options_json='["London", "Paris", "Berlin"]',
-            answer_key="Paris",
-            skill_code="reading",
-        ),
-    ]
-    db.add_all(reading_questions)
-    db.commit()
+        listening = models.Test(
+            exam_type="IELTS",
+            level=1,
+            section="Listening",
+            title="Sample Listening",
+        )
+        db.add(listening)
+        db.commit()
+        db.refresh(listening)
+        listening_questions = [
+            models.Question(
+                test_id=listening.id,
+                prompt="What sound comes after 'A' in the alphabet?",
+                options_json='["B", "C", "D"]',
+                answer_key="B",
+                skill_code="listening",
+                audio_url="sample1.mp3",
+            ),
+            models.Question(
+                test_id=listening.id,
+                prompt="How many days are in a week?",
+                options_json='["5", "7", "9"]',
+                answer_key="7",
+                skill_code="listening",
+                audio_url="sample2.mp3",
+            ),
+        ]
+        db.add_all(listening_questions)
+        db.commit()
 
-    listening = models.Test(
-        exam_type="IELTS",
-        level=1,
-        section="Listening",
-        title="Sample Listening",
-    )
-    db.add(listening)
-    db.commit()
-    db.refresh(listening)
-    listening_questions = [
-        models.Question(
-            test_id=listening.id,
-            prompt="What sound comes after 'A' in the alphabet?",
-            options_json='["B", "C", "D"]',
-            answer_key="B",
-            skill_code="listening",
-            audio_url="sample1.mp3",
-        ),
-        models.Question(
-            test_id=listening.id,
-            prompt="How many days are in a week?",
-            options_json='["5", "7", "9"]',
-            answer_key="7",
-            skill_code="listening",
-            audio_url="sample2.mp3",
-        ),
-    ]
-    db.add_all(listening_questions)
-    db.commit()
+    if not db.query(models.Vocabulary).first():
+        vocab = [
+            models.Vocabulary(word="apple", definition="a fruit"),
+            models.Vocabulary(word="book", definition="a reading item"),
+            models.Vocabulary(word="cat", definition="a small animal"),
+        ]
+        db.add_all(vocab)
+        db.commit()
 
 
 with SessionLocal() as db:
@@ -193,4 +203,59 @@ def dashboard(user_id: int, db: Session = Depends(get_db)):
         "skill_profile": [
             {"skill": p.skill_code, "pct": p.mastery_pct} for p in profile
         ],
+        "recommended_tasks": crud.recommend_tasks(db, user),
+        "latest_scores": crud.recent_scores(db, user_id),
+        "study_time": crud.study_time_trend(db, user_id),
     }
+
+
+@app.get("/drills/vocab/{user_id}", response_model=schemas.VocabItem | None)
+def get_vocab_drill(user_id: int, db: Session = Depends(get_db)):
+    return crud.next_vocab_item(db, user_id)
+
+
+@app.post("/drills/vocab/{user_id}/{vocab_id}")
+def review_vocab_drill(
+    user_id: int,
+    vocab_id: int,
+    review: schemas.VocabReview,
+    db: Session = Depends(get_db),
+):
+    crud.update_vocab_progress(db, user_id, vocab_id, review.correct)
+    return {"status": "ok"}
+
+
+WRITING_PROMPTS = [
+    "Describe your favorite hobby.",
+    "What is the best book you've read recently?",
+]
+
+
+@app.get("/drills/quick-write")
+def quick_write_prompt():
+    return {"prompt": random.choice(WRITING_PROMPTS)}
+
+
+@app.post("/drills/quick-write/submit", response_model=schemas.EssayAttempt)
+def quick_write_submit(submission: schemas.EssaySubmission, db: Session = Depends(get_db)):
+    feedback = grade_essay(submission.text)
+    attempt = crud.record_essay_attempt(db, submission.user_id, submission.text, feedback)
+    return {"id": attempt.id, "score": attempt.score, "feedback": feedback}
+
+
+SPEAK_PROMPTS = [
+    "Talk about your hometown.",
+    "Explain a recent challenge you faced.",
+]
+
+
+@app.get("/drills/quick-speak")
+def quick_speak_prompt():
+    return {"prompt": random.choice(SPEAK_PROMPTS)}
+
+
+@app.post("/drills/quick-speak/submit")
+def quick_speak_submit(submission: schemas.SpeakSubmission, db: Session = Depends(get_db)):
+    feedback = crud.grade_speaking(submission.transcript)
+    crud.record_study_session(db, submission.user_id, 1)
+    return {"feedback": feedback}

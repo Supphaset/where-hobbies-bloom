@@ -79,3 +79,30 @@ class EssayAttempt(Base):
     feedback_json = Column(String)
     score = Column(Float)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class StudySession(Base):
+    __tablename__ = "study_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    minutes = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Vocabulary(Base):
+    __tablename__ = "vocabulary"
+
+    id = Column(Integer, primary_key=True, index=True)
+    word = Column(String, unique=True, index=True)
+    definition = Column(String)
+
+
+class VocabProgress(Base):
+    __tablename__ = "vocab_progress"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    vocab_id = Column(Integer, ForeignKey("vocabulary.id"))
+    interval = Column(Integer, default=1)
+    next_due = Column(DateTime, default=datetime.utcnow)
