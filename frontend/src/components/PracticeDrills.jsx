@@ -1,5 +1,7 @@
 export default function PracticeDrills({ user }) {
   const [vocab, setVocab] = React.useState(null);
+  const [grammar, setGrammar] = React.useState(null);
+  const [grammarResult, setGrammarResult] = React.useState(null);
   const [quickPrompt, setQuickPrompt] = React.useState(null);
   const [essay, setEssay] = React.useState('');
   const [feedback, setFeedback] = React.useState(null);
@@ -9,6 +11,9 @@ export default function PracticeDrills({ user }) {
     fetch(`/drills/vocab/${user.id}`)
       .then(res => res.json())
       .then(setVocab);
+    fetch(`/drills/grammar/${user.id}`)
+      .then(res => res.json())
+      .then(setGrammar);
   }, [user]);
 
   const handleVocab = correct => {
@@ -21,6 +26,21 @@ export default function PracticeDrills({ user }) {
         .then(res => res.json())
         .then(setVocab);
     });
+  };
+
+  const answerGrammar = opt => {
+    fetch(`/drills/grammar/${user.id}/${grammar.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answer: opt })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setGrammarResult(data.correct);
+        fetch(`/drills/grammar/${user.id}`)
+          .then(res => res.json())
+          .then(setGrammar);
+      });
   };
 
   const fetchQuickPrompt = () => {
@@ -56,6 +76,22 @@ export default function PracticeDrills({ user }) {
           </div>
         ) : (
           <button onClick={() => fetch(`/drills/vocab/${user.id}`).then(res => res.json()).then(setVocab)}>Start</button>
+        )}
+      </div>
+      <div>
+        <h3>Grammar</h3>
+        {grammar ? (
+          <div>
+            <p>{grammar.prompt}</p>
+            {grammar.options.map(opt => (
+              <button key={opt} onClick={() => answerGrammar(opt)}>{opt}</button>
+            ))}
+            {grammarResult !== null && (
+              <span>{grammarResult ? 'Correct!' : 'Try again'}</span>
+            )}
+          </div>
+        ) : (
+          <button onClick={() => fetch(`/drills/grammar/${user.id}`).then(res => res.json()).then(setGrammar)}>Start</button>
         )}
       </div>
       <div>

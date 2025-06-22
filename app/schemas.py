@@ -104,3 +104,7 @@ class VocabReview(BaseModel):
 class SpeakSubmission(BaseModel):
     user_id: int
     transcript: str
+
+
+class GrammarAnswer(BaseModel):
+    answer: str

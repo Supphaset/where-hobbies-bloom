@@ -201,7 +201,7 @@ def recommend_tasks(db: Session, user: models.User, top_n: int = 3) -> list[str]
         .filter(models.SkillProfile.user_id == user.id)
         .all()
     )
-    english = {"reading", "listening", "writing", "speaking"}
+    english = {"reading", "listening", "writing", "speaking", "grammar"}
     skill_gaps: list[tuple[float, str]] = []
     for p in profile:
         target = user.target_ielts * 10 if p.skill_code in english else user.target_hsk

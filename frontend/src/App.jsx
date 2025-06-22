@@ -3,7 +3,7 @@ import Dashboard from './components/Dashboard.jsx';
 import Exams from './components/Exams.jsx';
 import PracticeDrills from './components/PracticeDrills.jsx';
 
-const { HashRouter, Route, Switch, Link, Redirect } = ReactRouterDOM;
+const { HashRouter, Route, Switch, NavLink, Redirect } = ReactRouterDOM;
 
 export default function App() {
   const [user, setUser] = React.useState(null);
@@ -18,9 +18,9 @@ export default function App() {
   return (
     <HashRouter>
       <nav>
-        <Link to="/">Dashboard</Link>{' | '}
-        <Link to="/exams">Exams</Link>{' | '}
-        <Link to="/practice">Practice</Link>
+        <NavLink exact to="/" activeClassName="active">Dashboard</NavLink>{' | '}
+        <NavLink to="/exams" activeClassName="active">Exams</NavLink>{' | '}
+        <NavLink to="/practice" activeClassName="active">Practice</NavLink>
       </nav>
       <Switch>
         <Route path="/setup" render={() => <CreateUser onCreated={setUser} />} />

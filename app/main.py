@@ -225,6 +225,47 @@ def review_vocab_drill(
     return {"status": "ok"}
 
 
+GRAMMAR_QUESTIONS = [
+    {
+        "id": 1,
+        "prompt": "Choose the correct form: She ____ to school every day.",
+        "options": ["go", "goes", "going"],
+        "answer_key": "goes",
+    },
+    {
+        "id": 2,
+        "prompt": "Which sentence is correct?",
+        "options": [
+            "He don't like apples",
+            "He doesn't like apples",
+            "He doesn't likes apples",
+        ],
+        "answer_key": "He doesn't like apples",
+    },
+]
+
+
+@app.get("/drills/grammar/{user_id}")
+def grammar_question(user_id: int) -> dict:
+    question = random.choice(GRAMMAR_QUESTIONS)
+    return question
+
+
+@app.post("/drills/grammar/{user_id}/{question_id}")
+def grammar_answer(
+    user_id: int,
+    question_id: int,
+    answer: schemas.GrammarAnswer,
+    db: Session = Depends(get_db),
+):
+    q = next((q for q in GRAMMAR_QUESTIONS if q["id"] == question_id), None)
+    correct = bool(q and answer.answer == q["answer_key"])
+    score = 100 if correct else 0
+    crud.update_skill_profile(db, user_id, "grammar", score)
+    crud.record_study_session(db, user_id, 1)
+    return {"correct": correct}
+
+
 WRITING_PROMPTS = [
     "Describe your favorite hobby.",
     "What is the best book you've read recently?",
