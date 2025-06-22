@@ -22,22 +22,41 @@ export default function CreateUser({
     });
   };
   return /*#__PURE__*/React.createElement("form", {
-    onSubmit: handleSubmit
-  }, /*#__PURE__*/React.createElement("h2", null, "Welcome to SoloLingua Coach"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", null, "Name: ", /*#__PURE__*/React.createElement("input", {
+    onSubmit: handleSubmit,
+    className: "mt-4"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "mb-3"
+  }, "Welcome to SoloLingua Coach"), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Name", /*#__PURE__*/React.createElement("input", {
+    className: "form-control",
     value: name,
     onChange: e => setName(e.target.value),
     required: true
-  }))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", null, "Target IELTS: ", /*#__PURE__*/React.createElement("input", {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Target IELTS", /*#__PURE__*/React.createElement("input", {
     type: "number",
+    className: "form-control",
     value: ielts,
     onChange: e => setIelts(e.target.value),
     required: true
-  }))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", null, "Target HSK: ", /*#__PURE__*/React.createElement("input", {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Target HSK", /*#__PURE__*/React.createElement("input", {
     type: "number",
+    className: "form-control",
     value: hsk,
     onChange: e => setHsk(e.target.value),
     required: true
   }))), /*#__PURE__*/React.createElement("button", {
-    type: "submit"
+    type: "submit",
+    className: "btn btn-primary"
   }, "Create Profile"));
 }
