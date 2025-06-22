@@ -2,6 +2,7 @@ export default function Exams({ user }) {
   const [test, setTest] = React.useState(null);
   const [answers, setAnswers] = React.useState({});
   const [score, setScore] = React.useState(null);
+  const [result, setResult] = React.useState(null);
   const [essay, setEssay] = React.useState('');
   const [section, setSection] = React.useState('Reading');
 
@@ -13,6 +14,7 @@ export default function Exams({ user }) {
           setTest(data);
           setEssay('');
           setScore(null);
+          setResult(null);
         });
     } else {
       fetch(`/exams/IELTS/${section}`)
@@ -21,6 +23,7 @@ export default function Exams({ user }) {
           setTest(data);
           setAnswers({});
           setScore(null);
+          setResult(null);
         });
     }
   }, [section]);
@@ -33,7 +36,10 @@ export default function Exams({ user }) {
         body: JSON.stringify({ user_id: user.id, text: essay })
       })
         .then(res => res.json())
-        .then(data => setScore(data.score));
+        .then(data => {
+          setScore(data.score);
+          setResult(data);
+        });
     } else {
       const payload = {
         user_id: user.id,
@@ -45,7 +51,10 @@ export default function Exams({ user }) {
         body: JSON.stringify(payload)
       })
         .then(res => res.json())
-        .then(data => setScore(data.score));
+        .then(data => {
+          setScore(data.score);
+          setResult(data);
+        });
     }
   };
 
@@ -98,7 +107,21 @@ export default function Exams({ user }) {
       )}
       <button onClick={handleSubmit}>Submit</button>
       {score !== null && (
-        <p><strong>Your score: {score}</strong></p>
+        <div>
+          <p><strong>Your score: {score}</strong></p>
+          {result && section === 'Writing' && (
+            <pre>{JSON.stringify(result.feedback, null, 2)}</pre>
+          )}
+          {result && section !== 'Writing' && (
+            <ul>
+              {result.answers.map(a => (
+                <li key={a.question_id}>
+                  Q{a.question_id}: {a.correct ? '✓' : '✗'} (you: {a.response})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );

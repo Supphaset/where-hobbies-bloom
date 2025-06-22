@@ -43,10 +43,18 @@ class AnswerCreate(BaseModel):
     response: str
 
 
+class Answer(AnswerCreate):
+    correct: bool
+
+    class Config:
+        orm_mode = True
+
+
 class Attempt(BaseModel):
     id: int
     test_id: int
     score: float
+    answers: list[Answer] = []
 
     class Config:
         orm_mode = True

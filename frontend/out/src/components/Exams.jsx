@@ -4,6 +4,7 @@ export default function Exams({
   const [test, setTest] = React.useState(null);
   const [answers, setAnswers] = React.useState({});
   const [score, setScore] = React.useState(null);
+  const [result, setResult] = React.useState(null);
   const [essay, setEssay] = React.useState('');
   const [section, setSection] = React.useState('Reading');
   React.useEffect(() => {
@@ -12,12 +13,14 @@ export default function Exams({
         setTest(data);
         setEssay('');
         setScore(null);
+        setResult(null);
       });
     } else {
       fetch(`/exams/IELTS/${section}`).then(res => res.json()).then(data => {
         setTest(data);
         setAnswers({});
         setScore(null);
+        setResult(null);
       });
     }
   }, [section]);
@@ -32,7 +35,10 @@ export default function Exams({
           user_id: user.id,
           text: essay
         })
-      }).then(res => res.json()).then(data => setScore(data.score));
+      }).then(res => res.json()).then(data => {
+        setScore(data.score);
+        setResult(data);
+      });
     } else {
       const payload = {
         user_id: user.id,
@@ -47,7 +53,10 @@ export default function Exams({
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
-      }).then(res => res.json()).then(data => setScore(data.score));
+      }).then(res => res.json()).then(data => {
+        setScore(data.score);
+        setResult(data);
+      });
     }
   };
   if (!user) return /*#__PURE__*/React.createElement("p", null, "Please create your profile first.");
@@ -83,5 +92,7 @@ export default function Exams({
     })
   }), opt)))), /*#__PURE__*/React.createElement("button", {
     onClick: handleSubmit
-  }, "Submit"), score !== null && /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Your score: ", score)));
+  }, "Submit"), score !== null && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Your score: ", score)), result && section === 'Writing' && /*#__PURE__*/React.createElement("pre", null, JSON.stringify(result.feedback, null, 2)), result && section !== 'Writing' && /*#__PURE__*/React.createElement("ul", null, result.answers.map(a => /*#__PURE__*/React.createElement("li", {
+    key: a.question_id
+  }, "Q", a.question_id, ": ", a.correct ? '✓' : '✗', " (you: ", a.response, ")")))));
 }
