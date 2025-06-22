@@ -25,7 +25,12 @@ This repository contains a small [FastAPI](https://fastapi.tiangolo.com/) applic
    - `GET /users/{user_id}` – retrieve a user by ID.
    - `GET /exams/IELTS/{section}` – fetch a sample IELTS section (`Reading` or `Listening`).
    - `POST /exams/IELTS/{section}/submit` – submit answers for that section.
-   - `GET /dashboard/{user_id}` – show skill profile and exam-ready status.
+    - `GET /dashboard/{user_id}` – show skill profile and exam-ready status.
+
+The dashboard also surfaces recommended tasks using an adaptive engine.
+Each skill profile entry is compared against your targets (IELTS or HSK).
+The gap `target - mastery_pct` determines priority so the weakest skills
+appear first.
 
 3. **Run tests** *(optional)*
    Ensure dependencies are installed first since the tests use `httpx` for the
