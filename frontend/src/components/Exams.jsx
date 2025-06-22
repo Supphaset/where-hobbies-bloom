@@ -7,8 +7,10 @@ export default function Exams({ user }) {
   const [section, setSection] = React.useState('Reading');
   const DURATIONS = { Reading: 60, Listening: 60, Writing: 60 };
   const [timeLeft, setTimeLeft] = React.useState(DURATIONS[section]);
+  const [started, setStarted] = React.useState(false);
 
   React.useEffect(() => {
+    if (!started) return;
     if (section === 'Writing') {
       fetch('/exams/IELTS/Writing')
         .then(res => res.json())
@@ -28,11 +30,11 @@ export default function Exams({ user }) {
           setResult(null);
         });
     }
-  }, [section]);
+  }, [section, started]);
 
   React.useEffect(() => {
     let timer;
-    if (test) {
+    if (test && started) {
       setTimeLeft(DURATIONS[section]);
       timer = setInterval(() => {
         setTimeLeft(prev => {
@@ -45,7 +47,7 @@ export default function Exams({ user }) {
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [test, section]);
+  }, [test, section, started]);
 
   const handleSubmit = () => {
     if (section === 'Writing') {
@@ -78,6 +80,31 @@ export default function Exams({ user }) {
   };
 
   if (!user) return <p>Please create your profile first.</p>;
+  if (!started) {
+    return (
+      <div className="mt-4">
+        <div className="mb-3">
+          <label className="form-label">
+            Section
+            <select
+              className="form-select"
+              value={section}
+              onChange={e => {
+                setSection(e.target.value);
+                setStarted(false);
+                setTest(null);
+              }}
+            >
+              <option value="Reading">Reading</option>
+              <option value="Listening">Listening</option>
+              <option value="Writing">Writing</option>
+            </select>
+          </label>
+        </div>
+        <button onClick={() => setStarted(true)} className="btn btn-primary">Start</button>
+      </div>
+    );
+  }
   if (!test) return <p>Loading...</p>;
 
   return (
@@ -88,7 +115,11 @@ export default function Exams({ user }) {
           <select
             className="form-select"
             value={section}
-            onChange={e => setSection(e.target.value)}
+            onChange={e => {
+              setSection(e.target.value);
+              setStarted(false);
+              setTest(null);
+            }}
           >
             <option value="Reading">Reading</option>
             <option value="Listening">Listening</option>
@@ -97,7 +128,7 @@ export default function Exams({ user }) {
         </label>
       </div>
       <h2 className="mb-3">{test.title}</h2>
-      <p>Time left: {timeLeft}s</p>
+      {started && <p>Time left: {timeLeft}s</p>}
       {section === 'Writing' ? (
         <div>
           <p>{test.prompt}</p>
@@ -130,7 +161,7 @@ export default function Exams({ user }) {
           </div>
         ))
       )}
-      <button onClick={handleSubmit} className="btn btn-primary mt-3" disabled={timeLeft === 0}>Submit</button>
+      <button onClick={handleSubmit} className="btn btn-primary mt-3" disabled={!started || timeLeft === 0}>Submit</button>
       {score !== null && (
         <div>
           <p><strong>Your score: {score}</strong></p>

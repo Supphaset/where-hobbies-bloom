@@ -10,11 +10,8 @@ from app.database import SessionLocal
 from app import models
 
 
-def import_from_json(path: Path, db: Session) -> None:
-    """Insert tests and vocabulary from a JSON file."""
-    with path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
-
+def _import(data: dict, db: Session) -> None:
+    """Insert tests and vocabulary from a parsed JSON dict."""
     for t in data.get("tests", []):
         existing = (
             db.query(models.Test)
@@ -52,7 +49,6 @@ def import_from_json(path: Path, db: Session) -> None:
         ]
         db.add_all(questions)
         db.commit()
-
     for v in data.get("vocabulary", []):
         if db.query(models.Vocabulary).filter_by(word=v["word"]).first():
             continue
@@ -60,6 +56,18 @@ def import_from_json(path: Path, db: Session) -> None:
             models.Vocabulary(word=v["word"], definition=v.get("definition", ""))
         )
     db.commit()
+
+
+def import_from_json(path: Path, db: Session) -> None:
+    """Insert tests and vocabulary from a JSON file."""
+    with path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    _import(data, db)
+
+
+def import_from_data(data: dict, db: Session) -> None:
+    """Insert tests and vocabulary from an in-memory object."""
+    _import(data, db)
 
 
 def main() -> None:

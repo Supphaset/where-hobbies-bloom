@@ -9,9 +9,10 @@ export default function Layout({ children }) {
           <div className="navbar-nav">
             <NavLink exact to="/" className="nav-link" activeClassName="active">Dashboard</NavLink>
             <NavLink to="/exams" className="nav-link" activeClassName="active">Exams</NavLink>
-            <NavLink to="/practice" className="nav-link" activeClassName="active">Practice</NavLink>
-          </div>
+          <NavLink to="/practice" className="nav-link" activeClassName="active">Practice</NavLink>
+          <NavLink to="/admin" className="nav-link" activeClassName="active">Admin</NavLink>
         </div>
+      </div>
       </nav>
       <div className="container mt-4">
         {children}
