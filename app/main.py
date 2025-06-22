@@ -26,7 +26,7 @@ app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 
 def seed_content(db: Session) -> None:
-    """Create sample IELTS reading and listening tests if none exist."""
+    """Create sample IELTS and HSK tests if none exist."""
     if db.query(models.Test).first():
         pass
     else:
@@ -42,16 +42,37 @@ def seed_content(db: Session) -> None:
         reading_questions = [
             models.Question(
                 test_id=reading.id,
-                prompt="What is 2 + 2?",
-                options_json='["3", "4", "5"]',
-                answer_key="4",
+                prompt="Which planet is known as the Red Planet?",
+                options_json='["Earth", "Mars", "Venus"]',
+                answer_key="Mars",
                 skill_code="reading",
             ),
             models.Question(
                 test_id=reading.id,
-                prompt="Capital of France?",
-                options_json='["London", "Paris", "Berlin"]',
-                answer_key="Paris",
+                prompt="Synonym of 'rapid'?",
+                options_json='["slow", "quick", "dull"]',
+                answer_key="quick",
+                skill_code="reading",
+            ),
+            models.Question(
+                test_id=reading.id,
+                prompt="Antonym of 'ancient'?",
+                options_json='["old", "modern", "historic"]',
+                answer_key="modern",
+                skill_code="reading",
+            ),
+            models.Question(
+                test_id=reading.id,
+                prompt="The committee _____ the proposal?",
+                options_json='["accepts", "accept", "accepting"]',
+                answer_key="accepts",
+                skill_code="reading",
+            ),
+            models.Question(
+                test_id=reading.id,
+                prompt="Meaning of 'abundant'?",
+                options_json='["scarce", "plentiful", "small"]',
+                answer_key="plentiful",
                 skill_code="reading",
             ),
         ]
@@ -70,22 +91,119 @@ def seed_content(db: Session) -> None:
         listening_questions = [
             models.Question(
                 test_id=listening.id,
-                prompt="What sound comes after 'A' in the alphabet?",
-                options_json='["B", "C", "D"]',
-                answer_key="B",
+                prompt="How many seasons are there in a year?",
+                options_json='["2", "4", "6"]',
+                answer_key="4",
                 skill_code="listening",
                 audio_url="sample1.mp3",
             ),
             models.Question(
                 test_id=listening.id,
-                prompt="How many days are in a week?",
-                options_json='["5", "7", "9"]',
-                answer_key="7",
+                prompt="What color do you get when you mix blue and yellow?",
+                options_json='["green", "purple", "orange"]',
+                answer_key="green",
                 skill_code="listening",
                 audio_url="sample2.mp3",
             ),
+            models.Question(
+                test_id=listening.id,
+                prompt="Which day comes after Friday?",
+                options_json='["Thursday", "Saturday", "Sunday"]',
+                answer_key="Saturday",
+                skill_code="listening",
+                audio_url="sample3.mp3",
+            ),
+            models.Question(
+                test_id=listening.id,
+                prompt="What is the opposite of 'noisy'?",
+                options_json='["quiet", "loud", "bright"]',
+                answer_key="quiet",
+                skill_code="listening",
+                audio_url="sample4.mp3",
+            ),
+            models.Question(
+                test_id=listening.id,
+                prompt="How many letters are in the English word 'test'?",
+                options_json='["3", "4", "5"]',
+                answer_key="4",
+                skill_code="listening",
+                audio_url="sample5.mp3",
+            ),
         ]
         db.add_all(listening_questions)
+        db.commit()
+
+        hsk_char = models.Test(
+            exam_type="HSK",
+            level=1,
+            section="Characters",
+            title="HSK Characters",
+        )
+        db.add(hsk_char)
+        db.commit()
+        db.refresh(hsk_char)
+        char_questions = [
+            models.Question(
+                test_id=hsk_char.id,
+                prompt="What is the pinyin for the character '你'?",
+                options_json='["ni3", "ta1", "wo3"]',
+                answer_key="ni3",
+                skill_code="hanzi",
+            ),
+            models.Question(
+                test_id=hsk_char.id,
+                prompt="Which character means 'water'?",
+                options_json='["水", "火", "木"]',
+                answer_key="水",
+                skill_code="hanzi",
+            ),
+            models.Question(
+                test_id=hsk_char.id,
+                prompt="Meaning of '大'?",
+                options_json='["small", "big", "old"]',
+                answer_key="big",
+                skill_code="hanzi",
+            ),
+        ]
+        db.add_all(char_questions)
+        db.commit()
+
+        hsk_listen = models.Test(
+            exam_type="HSK",
+            level=1,
+            section="Listening",
+            title="HSK Listening",
+        )
+        db.add(hsk_listen)
+        db.commit()
+        db.refresh(hsk_listen)
+        hsk_listen_questions = [
+            models.Question(
+                test_id=hsk_listen.id,
+                prompt="What number is spoken in the clip?",
+                options_json='["1", "2", "3"]',
+                answer_key="2",
+                skill_code="listening",
+                audio_url="hsk1.mp3",
+            ),
+            models.Question(
+                test_id=hsk_listen.id,
+                prompt="Which word do you hear?",
+                options_json='["hello", "goodbye", "thanks"]',
+                answer_key="hello",
+                skill_code="listening",
+                audio_url="hsk2.mp3",
+            ),
+            models.Question(
+                test_id=hsk_listen.id,
+                prompt="Which tone is correct for 'ma' when it means 'horse'?",
+                options_json='["ma1", "ma3", "ma4"]',
+                answer_key="ma3",
+                skill_code="listening",
+                audio_url="hsk3.mp3",
+            ),
+        ]
+        db.add_all(hsk_listen_questions)
         db.commit()
 
     if not db.query(models.Vocabulary).first():

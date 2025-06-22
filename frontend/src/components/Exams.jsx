@@ -5,6 +5,8 @@ export default function Exams({ user }) {
   const [result, setResult] = React.useState(null);
   const [essay, setEssay] = React.useState('');
   const [section, setSection] = React.useState('Reading');
+  const DURATIONS = { Reading: 60, Listening: 60, Writing: 60 };
+  const [timeLeft, setTimeLeft] = React.useState(DURATIONS[section]);
 
   React.useEffect(() => {
     if (section === 'Writing') {
@@ -27,6 +29,23 @@ export default function Exams({ user }) {
         });
     }
   }, [section]);
+
+  React.useEffect(() => {
+    let timer;
+    if (test) {
+      setTimeLeft(DURATIONS[section]);
+      timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [test, section]);
 
   const handleSubmit = () => {
     if (section === 'Writing') {
@@ -78,6 +97,7 @@ export default function Exams({ user }) {
         </label>
       </div>
       <h2 className="mb-3">{test.title}</h2>
+      <p>Time left: {timeLeft}s</p>
       {section === 'Writing' ? (
         <div>
           <p>{test.prompt}</p>
@@ -110,7 +130,7 @@ export default function Exams({ user }) {
           </div>
         ))
       )}
-      <button onClick={handleSubmit} className="btn btn-primary mt-3">Submit</button>
+      <button onClick={handleSubmit} className="btn btn-primary mt-3" disabled={timeLeft === 0}>Submit</button>
       {score !== null && (
         <div>
           <p><strong>Your score: {score}</strong></p>
