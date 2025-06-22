@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+import mimetypes
 from sqlalchemy.orm import Session
 
 from .database import engine, SessionLocal
@@ -14,6 +15,9 @@ FRONTEND_DIR = BASE_DIR / "frontend" / "out"
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="SoloLingua Coach API")
+
+# Ensure browsers recognize `.jsx` modules as JavaScript
+mimetypes.add_type("text/javascript", ".jsx")
 
 # Serve the frontend built with Next.js (static export)
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
