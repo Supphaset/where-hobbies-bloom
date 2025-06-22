@@ -41,3 +41,31 @@ appear first.
    ```
 
 The SQLite database is created automatically in the project directory when the server starts.
+
+### Building the frontend
+
+If you modify anything under `frontend/src`, compile the JSX files to the
+`frontend/out` directory so FastAPI can serve them. Install Babel once:
+
+```bash
+npm install --save-dev @babel/cli @babel/core @babel/preset-react
+```
+These commands require Node.js and npm.
+
+Then run:
+
+```bash
+npx babel frontend/src --out-dir frontend/out/src --presets @babel/preset-react
+cp frontend/index.html frontend/out/
+cp frontend/style.css frontend/out/
+```
+
+The contents of `frontend/out` are served at `/static` when the server is running.
+
+### Environment variables
+
+Copy `.env.example` to `.env` and set the values.
+
+- `OPENAI_API_KEY` – **required** for GPT grading. Without it the app falls back to simple heuristics.
+- `OPENAI_MODEL` – optional model name passed to the OpenAI API (defaults to `gpt-4o`).
+- `SQLALCHEMY_DATABASE_URL` – optional database URL (defaults to `sqlite:///./sololingua.db`).
