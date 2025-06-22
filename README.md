@@ -69,3 +69,55 @@ Copy `.env.example` to `.env` and set the values.
 - `OPENAI_API_KEY` – **required** for GPT grading. Without it the app falls back to simple heuristics.
 - `OPENAI_MODEL` – optional model name passed to the OpenAI API (defaults to `gpt-4o`).
 - `SQLALCHEMY_DATABASE_URL` – optional database URL (defaults to `sqlite:///./sololingua.db`).
+
+### Importing exam and practice content
+
+You can load your own exam questions or vocabulary lists from a JSON file.
+Create a file describing the tests and vocab items:
+
+```json
+{
+  "tests": [
+    {
+      "exam_type": "IELTS",
+      "level": 1,
+      "section": "Reading",
+      "title": "Custom Reading",
+      "questions": [
+        {
+          "prompt": "Which planet is known as the Red Planet?",
+          "options": ["Earth", "Mars", "Venus"],
+          "answer_key": "Mars",
+          "skill_code": "reading"
+        }
+      ]
+    }
+  ],
+  "vocabulary": [
+    {"word": "apple", "definition": "a fruit"}
+  ]
+}
+```
+
+Run the import helper to insert the data into the SQLite database:
+
+```bash
+python scripts/import_content.py path/to/content.json
+```
+
+The script uses SQLAlchemy models and works with the same `SQLALCHEMY_DATABASE_URL` as the API.
+
+### Generating exam questions from a PDF
+
+You can also create a test set from any PDF document. The helper below extracts
+text from the PDF and asks OpenAI to produce multiple-choice questions:
+
+```bash
+python scripts/pdf_to_questions.py source.pdf --output exam.json \
+  --exam-type IELTS --section Reading --title "Auto Generated" --level 1
+```
+
+The output JSON follows the same structure as above so you can pass it directly
+to `import_content.py`. The script requires `OPENAI_API_KEY` to be set. If the
+key is missing or the request fails, it falls back to a simple placeholder
+question.
