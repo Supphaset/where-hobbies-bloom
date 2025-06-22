@@ -1,7 +1,7 @@
 from pathlib import Path
 import random
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import mimetypes
@@ -259,3 +259,11 @@ def quick_speak_submit(submission: schemas.SpeakSubmission, db: Session = Depend
     feedback = crud.grade_speaking(submission.transcript)
     crud.record_study_session(db, submission.user_id, 1)
     return {"feedback": feedback}
+
+
+@app.post("/feedback/speaking")
+async def speaking_feedback(user_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    data = await file.read()
+    feedback = crud.speaking_feedback(data)
+    crud.record_study_session(db, user_id, 1)
+    return feedback
