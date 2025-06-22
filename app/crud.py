@@ -1,3 +1,4 @@
+import json
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -62,18 +63,25 @@ def record_attempt(
 def update_skill_profile(db: Session, user_id: int, skill: str, score: float) -> None:
     profile = (
         db.query(models.SkillProfile)
-        .filter(models.SkillProfile.user_id == user_id, models.SkillProfile.skill_code == skill)
+        .filter(
+            models.SkillProfile.user_id == user_id,
+            models.SkillProfile.skill_code == skill,
+        )
         .first()
     )
     if not profile:
-        profile = models.SkillProfile(user_id=user_id, skill_code=skill, mastery_pct=score)
+        profile = models.SkillProfile(
+            user_id=user_id, skill_code=skill, mastery_pct=score
+        )
         db.add(profile)
     else:
         profile.mastery_pct = (profile.mastery_pct + score) / 2
     db.commit()
 
 
-def latest_attempts(db: Session, user_id: int, exam_type: str, limit: int = 2) -> list[models.Attempt]:
+def latest_attempts(
+    db: Session, user_id: int, exam_type: str, limit: int = 2
+) -> list[models.Attempt]:
     return (
         db.query(models.Attempt)
         .join(models.Test)
@@ -91,7 +99,7 @@ def exam_ready(db: Session, user: models.User, exam_type: str) -> bool:
     scores = [a.score for a in attempts]
     mean = sum(scores) / 2
     variance = sum((s - mean) ** 2 for s in scores) / 2
-    std = variance ** 0.5
+    std = variance**0.5
     if exam_type == "IELTS":
         target = user.target_ielts * 10  # treat as 7.0 -> 70
         threshold = 0.25 * 10
@@ -99,3 +107,19 @@ def exam_ready(db: Session, user: models.User, exam_type: str) -> bool:
         target = user.target_hsk
         threshold = 15
     return min(scores) >= target and std < threshold
+
+
+def record_essay_attempt(
+    db: Session, user_id: int, text: str, feedback: dict
+) -> models.EssayAttempt:
+    attempt = models.EssayAttempt(
+        user_id=user_id,
+        essay_text=text,
+        feedback_json=json.dumps(feedback),
+        score=feedback.get("overall_band", 0) * 10,
+    )
+    db.add(attempt)
+    db.commit()
+    db.refresh(attempt)
+    update_skill_profile(db, user_id, "writing", attempt.score)
+    return attempt

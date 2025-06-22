@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .database import Base
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -67,3 +68,14 @@ class SkillProfile(Base):
     skill_code = Column(String, index=True)
     mastery_pct = Column(Float, default=0.0)
     last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class EssayAttempt(Base):
+    __tablename__ = "essay_attempts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    essay_text = Column(String)
+    feedback_json = Column(String)
+    score = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)

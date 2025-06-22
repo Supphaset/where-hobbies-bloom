@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from .database import engine, SessionLocal
 from . import models, schemas, crud
+from .ai_utils import grade_essay
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend" / "out"
@@ -41,14 +42,14 @@ def seed_content(db: Session) -> None:
         models.Question(
             test_id=reading.id,
             prompt="What is 2 + 2?",
-            options_json="[\"3\", \"4\", \"5\"]",
+            options_json='["3", "4", "5"]',
             answer_key="4",
             skill_code="reading",
         ),
         models.Question(
             test_id=reading.id,
             prompt="Capital of France?",
-            options_json="[\"London\", \"Paris\", \"Berlin\"]",
+            options_json='["London", "Paris", "Berlin"]',
             answer_key="Paris",
             skill_code="reading",
         ),
@@ -69,7 +70,7 @@ def seed_content(db: Session) -> None:
         models.Question(
             test_id=listening.id,
             prompt="What sound comes after 'A' in the alphabet?",
-            options_json="[\"B\", \"C\", \"D\"]",
+            options_json='["B", "C", "D"]',
             answer_key="B",
             skill_code="listening",
             audio_url="sample1.mp3",
@@ -77,7 +78,7 @@ def seed_content(db: Session) -> None:
         models.Question(
             test_id=listening.id,
             prompt="How many days are in a week?",
-            options_json="[\"5\", \"7\", \"9\"]",
+            options_json='["5", "7", "9"]',
             answer_key="7",
             skill_code="listening",
             audio_url="sample2.mp3",
@@ -128,6 +129,26 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
+@app.get("/exams/IELTS/Writing")
+def get_writing_prompt():
+    return {
+        "title": "IELTS Writing",
+        "prompt": "Describe a memorable journey you have taken.",
+    }
+
+
+@app.post("/exams/IELTS/Writing/submit", response_model=schemas.EssayAttempt)
+def submit_writing(submission: schemas.EssaySubmission, db: Session = Depends(get_db)):
+    user = crud.get_user(db, submission.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    feedback = grade_essay(submission.text)
+    attempt = crud.record_essay_attempt(
+        db, submission.user_id, submission.text, feedback
+    )
+    return {"id": attempt.id, "score": attempt.score, "feedback": feedback}
+
+
 @app.get("/exams/{exam_type}/{section}", response_model=schemas.Test)
 def get_exam(exam_type: str, section: str, db: Session = Depends(get_db)):
     test = crud.get_test(db, exam_type, section)
@@ -137,7 +158,12 @@ def get_exam(exam_type: str, section: str, db: Session = Depends(get_db)):
 
 
 @app.post("/exams/{exam_type}/{section}/submit", response_model=schemas.Attempt)
-def submit_exam(exam_type: str, section: str, submission: schemas.ExamSubmission, db: Session = Depends(get_db)):
+def submit_exam(
+    exam_type: str,
+    section: str,
+    submission: schemas.ExamSubmission,
+    db: Session = Depends(get_db),
+):
     user = crud.get_user(db, submission.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -157,8 +183,14 @@ def dashboard(user_id: int, db: Session = Depends(get_db)):
         "ielts": crud.exam_ready(db, user, "IELTS"),
         "hsk": crud.exam_ready(db, user, "HSK"),
     }
-    profile = db.query(models.SkillProfile).filter(models.SkillProfile.user_id == user_id).all()
+    profile = (
+        db.query(models.SkillProfile)
+        .filter(models.SkillProfile.user_id == user_id)
+        .all()
+    )
     return {
         "exam_ready": ready,
-        "skill_profile": [{"skill": p.skill_code, "pct": p.mastery_pct} for p in profile],
+        "skill_profile": [
+            {"skill": p.skill_code, "pct": p.mastery_pct} for p in profile
+        ],
     }
