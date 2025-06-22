@@ -2,6 +2,9 @@ import json
 import os
 from typing import Dict
 import io
+from dotenv import load_dotenv
+
+load_dotenv()
 
 try:
     import openai
