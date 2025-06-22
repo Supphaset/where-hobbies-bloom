@@ -6,7 +6,7 @@ const {
   HashRouter,
   Route,
   Switch,
-  Link,
+  NavLink,
   Redirect
 } = ReactRouterDOM;
 export default function App() {
@@ -17,12 +17,16 @@ export default function App() {
       setUser(JSON.parse(stored));
     }
   }, []);
-  return /*#__PURE__*/React.createElement(HashRouter, null, /*#__PURE__*/React.createElement("nav", null, /*#__PURE__*/React.createElement(Link, {
-    to: "/"
-  }, "Dashboard"), ' | ', /*#__PURE__*/React.createElement(Link, {
-    to: "/exams"
-  }, "Exams"), ' | ', /*#__PURE__*/React.createElement(Link, {
-    to: "/practice"
+  return /*#__PURE__*/React.createElement(HashRouter, null, /*#__PURE__*/React.createElement("nav", null, /*#__PURE__*/React.createElement(NavLink, {
+    exact: true,
+    to: "/",
+    activeClassName: "active"
+  }, "Dashboard"), ' | ', /*#__PURE__*/React.createElement(NavLink, {
+    to: "/exams",
+    activeClassName: "active"
+  }, "Exams"), ' | ', /*#__PURE__*/React.createElement(NavLink, {
+    to: "/practice",
+    activeClassName: "active"
   }, "Practice")), /*#__PURE__*/React.createElement(Switch, null, /*#__PURE__*/React.createElement(Route, {
     path: "/setup",
     render: () => /*#__PURE__*/React.createElement(CreateUser, {

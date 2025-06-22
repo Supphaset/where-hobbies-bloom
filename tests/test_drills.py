@@ -29,3 +29,12 @@ def test_speaking_feedback():
     data = resp.json()
     assert resp.status_code == 200
     assert 'fluency_band' in data
+
+
+def test_grammar_quiz():
+    user = client.post('/users/', json={'name': 'Grammar', 'target_ielts': 6, 'target_hsk': 160}).json()
+    q = client.get(f'/drills/grammar/{user["id"]}').json()
+    assert 'prompt' in q and 'answer_key' in q
+    resp = client.post(f'/drills/grammar/{user["id"]}/{q["id"]}', json={'answer': q['answer_key']})
+    assert resp.status_code == 200
+    assert resp.json()['correct'] is True
