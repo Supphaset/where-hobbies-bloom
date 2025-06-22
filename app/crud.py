@@ -29,6 +29,7 @@ def get_test(db: Session, exam_type: str, section: str) -> models.Test | None:
     return (
         db.query(models.Test)
         .filter(models.Test.exam_type == exam_type, models.Test.section == section)
+        .order_by(models.Test.id.desc())
         .first()
     )
 
