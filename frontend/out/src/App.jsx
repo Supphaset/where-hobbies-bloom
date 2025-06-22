@@ -21,7 +21,7 @@ export default function App() {
       <Layout>
         <Switch>
           <Route path="/setup" render={() => <CreateUser onCreated={setUser} />} />
-          <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <Redirect to="/setup" />} />
+          <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <CreateUser onCreated={setUser} />} />
           <Route path="/exams" render={() => user ? <Exams user={user} /> : <Redirect to="/setup" />} />
           <Route path="/practice" render={() => user ? <PracticeDrills user={user} /> : <Redirect to="/setup" />} />
         </Switch>

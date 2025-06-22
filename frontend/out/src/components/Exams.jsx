@@ -1,112 +1,133 @@
-export default function Exams({
-  user
-}) {
+export default function Exams({ user }) {
   const [test, setTest] = React.useState(null);
   const [answers, setAnswers] = React.useState({});
   const [score, setScore] = React.useState(null);
   const [result, setResult] = React.useState(null);
   const [essay, setEssay] = React.useState('');
   const [section, setSection] = React.useState('Reading');
+
   React.useEffect(() => {
     if (section === 'Writing') {
-      fetch('/exams/IELTS/Writing').then(res => res.json()).then(data => {
-        setTest(data);
-        setEssay('');
-        setScore(null);
-        setResult(null);
-      });
+      fetch('/exams/IELTS/Writing')
+        .then(res => res.json())
+        .then(data => {
+          setTest(data);
+          setEssay('');
+          setScore(null);
+          setResult(null);
+        });
     } else {
-      fetch(`/exams/IELTS/${section}`).then(res => res.json()).then(data => {
-        setTest(data);
-        setAnswers({});
-        setScore(null);
-        setResult(null);
-      });
+      fetch(`/exams/IELTS/${section}`)
+        .then(res => res.json())
+        .then(data => {
+          setTest(data);
+          setAnswers({});
+          setScore(null);
+          setResult(null);
+        });
     }
   }, [section]);
+
   const handleSubmit = () => {
     if (section === 'Writing') {
       fetch('/exams/IELTS/Writing/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-          text: essay
-        })
-      }).then(res => res.json()).then(data => {
-        setScore(data.score);
-        setResult(data);
-      });
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, text: essay })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setScore(data.score);
+          setResult(data);
+        });
     } else {
       const payload = {
         user_id: user.id,
-        answers: Object.entries(answers).map(([question_id, response]) => ({
-          question_id: parseInt(question_id),
-          response
-        }))
+        answers: Object.entries(answers).map(([question_id, response]) => ({ question_id: parseInt(question_id), response }))
       };
       fetch(`/exams/IELTS/${section}/submit`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      }).then(res => res.json()).then(data => {
-        setScore(data.score);
-        setResult(data);
-      });
+      })
+        .then(res => res.json())
+        .then(data => {
+          setScore(data.score);
+          setResult(data);
+        });
     }
   };
-  if (!user) return /*#__PURE__*/React.createElement("p", null, "Please create your profile first.");
-  if (!test) return /*#__PURE__*/React.createElement("p", null, "Loading...");
-  return /*#__PURE__*/React.createElement("div", {
-    className: "mt-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Section", /*#__PURE__*/React.createElement("select", {
-    className: "form-select",
-    value: section,
-    onChange: e => setSection(e.target.value)
-  }, /*#__PURE__*/React.createElement("option", {
-    value: "Reading"
-  }, "Reading"), /*#__PURE__*/React.createElement("option", {
-    value: "Listening"
-  }, "Listening"), /*#__PURE__*/React.createElement("option", {
-    value: "Writing"
-  }, "Writing")))), /*#__PURE__*/React.createElement("h2", {
-    className: "mb-3"
-  }, test.title), section === 'Writing' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, test.prompt), /*#__PURE__*/React.createElement("textarea", {
-    value: essay,
-    onChange: e => setEssay(e.target.value),
-    rows: 10,
-    cols: 60
-  })) : test.questions.map(q => /*#__PURE__*/React.createElement("div", {
-    key: q.id
-  }, /*#__PURE__*/React.createElement("p", null, q.prompt), q.audio_url && /*#__PURE__*/React.createElement("audio", {
-    controls: true,
-    src: q.audio_url
-  }), JSON.parse(q.options_json).map(opt => /*#__PURE__*/React.createElement("div", {
-    className: "form-check",
-    key: opt
-  }, /*#__PURE__*/React.createElement("input", {
-    type: "radio",
-    className: "form-check-input",
-    name: q.id,
-    value: opt,
-    onChange: e => setAnswers({
-      ...answers,
-      [q.id]: e.target.value
-    })
-  }), /*#__PURE__*/React.createElement("label", {
-    className: "form-check-label"
-  }, opt)))), /*#__PURE__*/React.createElement("button", {
-    onClick: handleSubmit,
-    className: "btn btn-primary mt-3"
-  }, "Submit"), score !== null && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("strong", null, "Your score: ", score)), result && section === 'Writing' && /*#__PURE__*/React.createElement("pre", null, JSON.stringify(result.feedback, null, 2)), result && section !== 'Writing' && /*#__PURE__*/React.createElement("ul", null, result.answers.map(a => /*#__PURE__*/React.createElement("li", {
-    key: a.question_id
-  }, "Q", a.question_id, ": ", a.correct ? '✓' : '✗', " (you: ", a.response, ")")))));
+
+  if (!user) return <p>Please create your profile first.</p>;
+  if (!test) return <p>Loading...</p>;
+
+  return (
+    <div className="mt-4">
+      <div className="mb-3">
+        <label className="form-label">
+          Section
+          <select
+            className="form-select"
+            value={section}
+            onChange={e => setSection(e.target.value)}
+          >
+            <option value="Reading">Reading</option>
+            <option value="Listening">Listening</option>
+            <option value="Writing">Writing</option>
+          </select>
+        </label>
+      </div>
+      <h2 className="mb-3">{test.title}</h2>
+      {section === 'Writing' ? (
+        <div>
+          <p>{test.prompt}</p>
+          <textarea
+            value={essay}
+            onChange={e => setEssay(e.target.value)}
+            rows={10}
+            cols={60}
+          />
+        </div>
+      ) : (
+        test.questions.map(q => (
+          <div key={q.id}>
+            <p>{q.prompt}</p>
+            {q.audio_url && (
+              <audio controls src={q.audio_url}></audio>
+            )}
+            {JSON.parse(q.options_json).map(opt => (
+              <div className="form-check" key={opt}>
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  name={q.id}
+                  value={opt}
+                  onChange={e => setAnswers({ ...answers, [q.id]: e.target.value })}
+                />
+                <label className="form-check-label">{opt}</label>
+              </div>
+            ))}
+          </div>
+        ))
+      )}
+      <button onClick={handleSubmit} className="btn btn-primary mt-3">Submit</button>
+      {score !== null && (
+        <div>
+          <p><strong>Your score: {score}</strong></p>
+          {result && section === 'Writing' && (
+            <pre>{JSON.stringify(result.feedback, null, 2)}</pre>
+          )}
+          {result && section !== 'Writing' && (
+            <ul>
+              {result.answers.map(a => (
+                <li key={a.question_id}>
+                  Q{a.question_id}: {a.correct ? '✓' : '✗'} (you: {a.response})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
