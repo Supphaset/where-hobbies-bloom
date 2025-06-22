@@ -16,30 +16,66 @@ app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 
 def seed_content(db: Session) -> None:
-    """Create a simple IELTS reading test with two questions if empty."""
+    """Create sample IELTS reading and listening tests if none exist."""
     if db.query(models.Test).first():
         return
-    test = models.Test(exam_type="IELTS", level=1, section="Reading", title="Sample Reading")
-    db.add(test)
+
+    reading = models.Test(
+        exam_type="IELTS",
+        level=1,
+        section="Reading",
+        title="Sample Reading",
+    )
+    db.add(reading)
     db.commit()
-    db.refresh(test)
-    questions = [
+    db.refresh(reading)
+    reading_questions = [
         models.Question(
-            test_id=test.id,
+            test_id=reading.id,
             prompt="What is 2 + 2?",
             options_json="[\"3\", \"4\", \"5\"]",
             answer_key="4",
             skill_code="reading",
         ),
         models.Question(
-            test_id=test.id,
+            test_id=reading.id,
             prompt="Capital of France?",
             options_json="[\"London\", \"Paris\", \"Berlin\"]",
             answer_key="Paris",
             skill_code="reading",
         ),
     ]
-    db.add_all(questions)
+    db.add_all(reading_questions)
+    db.commit()
+
+    listening = models.Test(
+        exam_type="IELTS",
+        level=1,
+        section="Listening",
+        title="Sample Listening",
+    )
+    db.add(listening)
+    db.commit()
+    db.refresh(listening)
+    listening_questions = [
+        models.Question(
+            test_id=listening.id,
+            prompt="What sound comes after 'A' in the alphabet?",
+            options_json="[\"B\", \"C\", \"D\"]",
+            answer_key="B",
+            skill_code="listening",
+            audio_url="sample1.mp3",
+        ),
+        models.Question(
+            test_id=listening.id,
+            prompt="How many days are in a week?",
+            options_json="[\"5\", \"7\", \"9\"]",
+            answer_key="7",
+            skill_code="listening",
+            audio_url="sample2.mp3",
+        ),
+    ]
+    db.add_all(listening_questions)
     db.commit()
 
 
@@ -84,20 +120,20 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
-@app.get("/exams/{exam_type}", response_model=schemas.Test)
-def get_exam(exam_type: str, db: Session = Depends(get_db)):
-    test = crud.get_test(db, exam_type)
+@app.get("/exams/{exam_type}/{section}", response_model=schemas.Test)
+def get_exam(exam_type: str, section: str, db: Session = Depends(get_db)):
+    test = crud.get_test(db, exam_type, section)
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
     return test
 
 
-@app.post("/exams/{exam_type}/submit", response_model=schemas.Attempt)
-def submit_exam(exam_type: str, submission: schemas.ExamSubmission, db: Session = Depends(get_db)):
+@app.post("/exams/{exam_type}/{section}/submit", response_model=schemas.Attempt)
+def submit_exam(exam_type: str, section: str, submission: schemas.ExamSubmission, db: Session = Depends(get_db)):
     user = crud.get_user(db, submission.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    test = crud.get_test(db, exam_type)
+    test = crud.get_test(db, exam_type, section)
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
     attempt = crud.record_attempt(db, submission.user_id, test, submission.answers)

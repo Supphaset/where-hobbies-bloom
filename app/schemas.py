@@ -18,6 +18,7 @@ class Question(BaseModel):
     options_json: str
     answer_key: str
     skill_code: str
+    audio_url: str | None = None
 
     class Config:
         orm_mode = True

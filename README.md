@@ -22,8 +22,8 @@ This repository contains a small [FastAPI](https://fastapi.tiangolo.com/) applic
    - `POST /users/` – create a user.
    - `GET /users/` – list all users.
    - `GET /users/{user_id}` – retrieve a user by ID.
-   - `GET /exams/IELTS` – fetch the sample IELTS exam with questions.
-   - `POST /exams/IELTS/submit` – submit answers and record an attempt.
+   - `GET /exams/IELTS/{section}` – fetch a sample IELTS section (`Reading` or `Listening`).
+   - `POST /exams/IELTS/{section}/submit` – submit answers for that section.
    - `GET /dashboard/{user_id}` – show skill profile and exam-ready status.
 
 3. **Run tests** *(optional)*
