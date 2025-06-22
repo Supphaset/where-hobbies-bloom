@@ -8,87 +8,87 @@ export default function Dashboard({ user }) {
       .then(setData);
   }, [user]);
 
-  if (!user) return <p>Please create your profile.</p>;
+  if (!user) return React.createElement('p', {} , "Please create your profile."   );
 
   return (
-    <div>
-      <h2>Dashboard</h2>
-      {data ? (
-        <div className="row g-3">
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Exam Ready</h5>
-                <ul className="list-unstyled mb-0">
-                  <li>IELTS: {data.exam_ready.ielts ? 'Yes' : 'No'}</li>
-                  <li>HSK: {data.exam_ready.hsk ? 'Yes' : 'No'}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Skill Profile</h5>
-                <table className="table table-sm">
-                  <thead>
-                    <tr>
-                      <th>Skill</th>
-                      <th>Mastery %</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.skill_profile.map(p => (
-                      <tr key={p.skill}>
-                        <td>{p.skill}</td>
-                        <td>{p.pct.toFixed(1)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Recommended Tasks</h5>
-                <ul className="mb-0">
-                  {data.recommended_tasks.map((t, i) => (
-                    <li key={i}>{t}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Recent Scores</h5>
-                <ul className="mb-0">
-                  {data.latest_scores.map((s, i) => (
-                    <li key={i}>{s.label}: {s.score.toFixed(1)}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Study Time (Last 7 Days)</h5>
-                <ul className="mb-0">
-                  {data.study_time.map(item => (
-                    <li key={item.date}>{item.date}: {item.minutes}m</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+    React.createElement('div', {} 
+      , React.createElement('h2', {} , "Dashboard")
+      , data ? (
+        React.createElement('div', { className: "row g-3" }
+          , React.createElement('div', { className: "col-md-6 col-lg-4" }
+            , React.createElement('div', { className: "card h-100" }
+              , React.createElement('div', { className: "card-body"}
+                , React.createElement('h5', { className: "card-title"}, "Exam Ready" )
+                , React.createElement('ul', { className: "list-unstyled mb-0" }
+                  , React.createElement('li', {} , "IELTS: " , data.exam_ready.ielts ? 'Yes' : 'No')
+                  , React.createElement('li', {} , "HSK: " , data.exam_ready.hsk ? 'Yes' : 'No')
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" }
+            , React.createElement('div', { className: "card h-100" }
+              , React.createElement('div', { className: "card-body"}
+                , React.createElement('h5', { className: "card-title"}, "Skill Profile" )
+                , React.createElement('table', { className: "table table-sm" }
+                  , React.createElement('thead', {} 
+                    , React.createElement('tr', {} 
+                      , React.createElement('th', {} , "Skill")
+                      , React.createElement('th', {} , "Mastery %" )
+                    )
+                  )
+                  , React.createElement('tbody', {} 
+                    , data.skill_profile.map(p => (
+                      React.createElement('tr', { key: p.skill}
+                        , React.createElement('td', {} , p.skill)
+                        , React.createElement('td', {} , p.pct.toFixed(1))
+                      )
+                    ))
+                  )
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" }
+            , React.createElement('div', { className: "card h-100" }
+              , React.createElement('div', { className: "card-body"}
+                , React.createElement('h5', { className: "card-title"}, "Recommended Tasks" )
+                , React.createElement('ul', { className: "mb-0"}
+                  , data.recommended_tasks.map((t, i) => (
+                    React.createElement('li', { key: i}, t)
+                  ))
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" }
+            , React.createElement('div', { className: "card h-100" }
+              , React.createElement('div', { className: "card-body"}
+                , React.createElement('h5', { className: "card-title"}, "Recent Scores" )
+                , React.createElement('ul', { className: "mb-0"}
+                  , data.latest_scores.map((s, i) => (
+                    React.createElement('li', { key: i}, s.label, ": " , s.score.toFixed(1))
+                  ))
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" }
+            , React.createElement('div', { className: "card h-100" }
+              , React.createElement('div', { className: "card-body"}
+                , React.createElement('h5', { className: "card-title"}, "Study Time (Last 7 Days)"    )
+                , React.createElement('ul', { className: "mb-0"}
+                  , data.study_time.map(item => (
+                    React.createElement('li', { key: item.date}, item.date, ": " , item.minutes, "m")
+                  ))
+                )
+              )
+            )
+          )
+        )
       ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+        React.createElement('p', {} , "Loading...")
+      )
+    )
   );
 }
