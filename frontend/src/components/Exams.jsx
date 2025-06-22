@@ -1,27 +1,4 @@
-const { HashRouter, Route, Switch, Link } = ReactRouterDOM;
-
-function Dashboard() {
-  const [data, setData] = React.useState(null);
-  React.useEffect(() => {
-    fetch('/dashboard/1')
-      .then(res => res.json())
-      .then(setData);
-  }, []);
-  return (
-    <div>
-      <h2>Dashboard</h2>
-      {data ? (
-        <div>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
-  );
-}
-
-function Exams() {
+export default function Exams({ user }) {
   const [test, setTest] = React.useState(null);
   const [answers, setAnswers] = React.useState({});
   const [score, setScore] = React.useState(null);
@@ -39,7 +16,7 @@ function Exams() {
 
   const handleSubmit = () => {
     const payload = {
-      user_id: 1,
+      user_id: user.id,
       answers: Object.entries(answers).map(([question_id, response]) => ({ question_id: parseInt(question_id), response }))
     };
     fetch(`/exams/IELTS/${section}/submit`, {
@@ -49,6 +26,7 @@ function Exams() {
     }).then(res => res.json()).then(data => setScore(data.score));
   };
 
+  if (!user) return <p>Please create your profile first.</p>;
   if (!test) return <p>Loading...</p>;
 
   return (
@@ -83,35 +61,9 @@ function Exams() {
         </div>
       ))}
       <button onClick={handleSubmit}>Submit</button>
-      {score !== null && <p>Score: {score}</p>}
+      {score !== null && (
+        <p><strong>Your score: {score}</strong></p>
+      )}
     </div>
   );
 }
-
-function PracticeDrills() {
-  return (
-    <div>
-      <h2>Practice Drills</h2>
-      <p>Drill activities will be available here.</p>
-    </div>
-  );
-}
-
-function App() {
-  return (
-    <HashRouter>
-      <nav>
-        <Link to="/">Dashboard</Link>{' | '}
-        <Link to="/exams">Exams</Link>{' | '}
-        <Link to="/practice">Practice</Link>
-      </nav>
-      <Switch>
-        <Route exact path="/" component={Dashboard} />
-        <Route path="/exams" component={Exams} />
-        <Route path="/practice" component={PracticeDrills} />
-      </Switch>
-    </HashRouter>
-  );
-}
-
-ReactDOM.render(<App />, document.getElementById('root'));
