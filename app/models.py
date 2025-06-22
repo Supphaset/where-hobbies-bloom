@@ -79,3 +79,14 @@ class EssayAttempt(Base):
     feedback_json = Column(String)
     score = Column(Float)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SpeechAttempt(Base):
+    __tablename__ = "speech_attempts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    transcript = Column(String)
+    feedback_json = Column(String)
+    score = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)

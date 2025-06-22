@@ -123,3 +123,19 @@ def record_essay_attempt(
     db.refresh(attempt)
     update_skill_profile(db, user_id, "writing", attempt.score)
     return attempt
+
+
+def record_speech_attempt(
+    db: Session, user_id: int, text: str, feedback: dict
+) -> models.SpeechAttempt:
+    attempt = models.SpeechAttempt(
+        user_id=user_id,
+        transcript=text,
+        feedback_json=json.dumps(feedback),
+        score=feedback.get("overall_band", 0) * 10,
+    )
+    db.add(attempt)
+    db.commit()
+    db.refresh(attempt)
+    update_skill_profile(db, user_id, "speaking", attempt.score)
+    return attempt

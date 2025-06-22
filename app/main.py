@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from .database import engine, SessionLocal
 from . import models, schemas, crud
-from .ai_utils import grade_essay
+from .ai_utils import grade_essay, grade_speech
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend" / "out"
@@ -146,6 +146,24 @@ def submit_writing(submission: schemas.EssaySubmission, db: Session = Depends(ge
     attempt = crud.record_essay_attempt(
         db, submission.user_id, submission.text, feedback
     )
+    return {"id": attempt.id, "score": attempt.score, "feedback": feedback}
+
+
+@app.get("/exams/IELTS/Speaking")
+def get_speaking_prompt():
+    return {
+        "title": "IELTS Speaking",
+        "prompt": "Talk about your hometown for one minute.",
+    }
+
+
+@app.post("/exams/IELTS/Speaking/submit", response_model=schemas.SpeechAttempt)
+def submit_speaking(submission: schemas.SpeechSubmission, db: Session = Depends(get_db)):
+    user = crud.get_user(db, submission.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    feedback = grade_speech(submission.text)
+    attempt = crud.record_speech_attempt(db, submission.user_id, submission.text, feedback)
     return {"id": attempt.id, "score": attempt.score, "feedback": feedback}
 
 

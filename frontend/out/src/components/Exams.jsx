@@ -6,12 +6,21 @@ export default function Exams({
   const [score, setScore] = React.useState(null);
   const [result, setResult] = React.useState(null);
   const [essay, setEssay] = React.useState('');
+  const [speech, setSpeech] = React.useState('');
   const [section, setSection] = React.useState('Reading');
   React.useEffect(() => {
     if (section === 'Writing') {
       fetch('/exams/IELTS/Writing').then(res => res.json()).then(data => {
         setTest(data);
         setEssay('');
+        setSpeech('');
+        setScore(null);
+        setResult(null);
+      });
+    } else if (section === 'Speaking') {
+      fetch('/exams/IELTS/Speaking').then(res => res.json()).then(data => {
+        setTest(data);
+        setSpeech('');
         setScore(null);
         setResult(null);
       });
@@ -34,6 +43,20 @@ export default function Exams({
         body: JSON.stringify({
           user_id: user.id,
           text: essay
+        })
+      }).then(res => res.json()).then(data => {
+        setScore(data.score);
+        setResult(data);
+      });
+    } else if (section === 'Speaking') {
+      fetch('/exams/IELTS/Speaking/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          text: speech
         })
       }).then(res => res.json()).then(data => {
         setScore(data.score);
@@ -70,10 +93,17 @@ export default function Exams({
     value: "Listening"
   }, "Listening"), /*#__PURE__*/React.createElement("option", {
     value: "Writing"
-  }, "Writing")))), /*#__PURE__*/React.createElement("h2", null, test.title), section === 'Writing' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, test.prompt), /*#__PURE__*/React.createElement("textarea", {
+  }, "Writing"), /*#__PURE__*/React.createElement("option", {
+    value: "Speaking"
+  }, "Speaking")))), /*#__PURE__*/React.createElement("h2", null, test.title), section === 'Writing' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, test.prompt), /*#__PURE__*/React.createElement("textarea", {
     value: essay,
     onChange: e => setEssay(e.target.value),
     rows: 10,
+    cols: 60
+  })) : section === 'Speaking' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, test.prompt), /*#__PURE__*/React.createElement("textarea", {
+    value: speech,
+    onChange: e => setSpeech(e.target.value),
+    rows: 5,
     cols: 60
   })) : test.questions.map(q => /*#__PURE__*/React.createElement("div", {
     key: q.id

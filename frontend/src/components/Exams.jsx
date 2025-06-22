@@ -4,6 +4,7 @@ export default function Exams({ user }) {
   const [score, setScore] = React.useState(null);
   const [result, setResult] = React.useState(null);
   const [essay, setEssay] = React.useState('');
+  const [speech, setSpeech] = React.useState('');
   const [section, setSection] = React.useState('Reading');
 
   React.useEffect(() => {
@@ -13,6 +14,16 @@ export default function Exams({ user }) {
         .then(data => {
           setTest(data);
           setEssay('');
+          setSpeech('');
+          setScore(null);
+          setResult(null);
+        });
+    } else if (section === 'Speaking') {
+      fetch('/exams/IELTS/Speaking')
+        .then(res => res.json())
+        .then(data => {
+          setTest(data);
+          setSpeech('');
           setScore(null);
           setResult(null);
         });
@@ -34,6 +45,17 @@ export default function Exams({ user }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, text: essay })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setScore(data.score);
+          setResult(data);
+        });
+    } else if (section === 'Speaking') {
+      fetch('/exams/IELTS/Speaking/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, text: speech })
       })
         .then(res => res.json())
         .then(data => {
@@ -70,6 +92,7 @@ export default function Exams({ user }) {
             <option value="Reading">Reading</option>
             <option value="Listening">Listening</option>
             <option value="Writing">Writing</option>
+            <option value="Speaking">Speaking</option>
           </select>
         </label>
       </div>
@@ -81,6 +104,16 @@ export default function Exams({ user }) {
             value={essay}
             onChange={e => setEssay(e.target.value)}
             rows={10}
+            cols={60}
+          />
+        </div>
+      ) : section === 'Speaking' ? (
+        <div>
+          <p>{test.prompt}</p>
+          <textarea
+            value={speech}
+            onChange={e => setSpeech(e.target.value)}
+            rows={5}
             cols={60}
           />
         </div>

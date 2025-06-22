@@ -77,3 +77,17 @@ class EssayAttempt(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SpeechSubmission(BaseModel):
+    user_id: int
+    text: str
+
+
+class SpeechAttempt(BaseModel):
+    id: int
+    score: float
+    feedback: dict
+
+    class Config:
+        orm_mode = True

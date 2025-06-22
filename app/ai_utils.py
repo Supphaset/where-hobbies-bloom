@@ -12,6 +12,11 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 
 SYSTEM_PROMPT = "You are a certified IELTS Writing examiner. Return JSON with task_response, coherence, lexical, grammar, and overall_band."
 
+SPEECH_PROMPT = (
+    "You are a certified IELTS Speaking examiner. "
+    "Return JSON with fluency, lexical, grammar, pronunciation, and overall_band."
+)
+
 
 def grade_essay(text: str) -> Dict:
     """Grade the essay with OpenAI or return a simple heuristic result."""
@@ -41,3 +46,31 @@ def grade_essay(text: str) -> Dict:
         "overall_band": band,
     }
     return feedback
+
+
+def grade_speech(text: str) -> Dict:
+    """Grade spoken transcript using OpenAI or a heuristic."""
+    if openai and API_KEY:
+        try:
+            openai.api_key = API_KEY
+            resp = openai.ChatCompletion.create(
+                model=MODEL,
+                messages=[
+                    {"role": "system", "content": SPEECH_PROMPT},
+                    {"role": "user", "content": text},
+                ],
+                temperature=0,
+            )
+            content = resp.choices[0].message.content
+            return json.loads(content)
+        except Exception:
+            pass
+    words = len(text.split())
+    band = min(9, max(5, words // 50 + 5))
+    return {
+        "fluency": {"band": band, "comment": ""},
+        "lexical": {"band": band, "comment": ""},
+        "grammar": {"band": band, "comment": ""},
+        "pronunciation": {"band": band, "comment": ""},
+        "overall_band": band,
+    }
