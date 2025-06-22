@@ -4,29 +4,51 @@ export default function Exams({
   const [test, setTest] = React.useState(null);
   const [answers, setAnswers] = React.useState({});
   const [score, setScore] = React.useState(null);
+  const [essay, setEssay] = React.useState('');
   const [section, setSection] = React.useState('Reading');
   React.useEffect(() => {
-    fetch(`/exams/IELTS/${section}`).then(res => res.json()).then(data => {
-      setTest(data);
-      setAnswers({});
-      setScore(null);
-    });
+    if (section === 'Writing') {
+      fetch('/exams/IELTS/Writing').then(res => res.json()).then(data => {
+        setTest(data);
+        setEssay('');
+        setScore(null);
+      });
+    } else {
+      fetch(`/exams/IELTS/${section}`).then(res => res.json()).then(data => {
+        setTest(data);
+        setAnswers({});
+        setScore(null);
+      });
+    }
   }, [section]);
   const handleSubmit = () => {
-    const payload = {
-      user_id: user.id,
-      answers: Object.entries(answers).map(([question_id, response]) => ({
-        question_id: parseInt(question_id),
-        response
-      }))
-    };
-    fetch(`/exams/IELTS/${section}/submit`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }).then(res => res.json()).then(data => setScore(data.score));
+    if (section === 'Writing') {
+      fetch('/exams/IELTS/Writing/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          text: essay
+        })
+      }).then(res => res.json()).then(data => setScore(data.score));
+    } else {
+      const payload = {
+        user_id: user.id,
+        answers: Object.entries(answers).map(([question_id, response]) => ({
+          question_id: parseInt(question_id),
+          response
+        }))
+      };
+      fetch(`/exams/IELTS/${section}/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }).then(res => res.json()).then(data => setScore(data.score));
+    }
   };
   if (!user) return /*#__PURE__*/React.createElement("p", null, "Please create your profile first.");
   if (!test) return /*#__PURE__*/React.createElement("p", null, "Loading...");
@@ -37,7 +59,14 @@ export default function Exams({
     value: "Reading"
   }, "Reading"), /*#__PURE__*/React.createElement("option", {
     value: "Listening"
-  }, "Listening")))), /*#__PURE__*/React.createElement("h2", null, test.title), test.questions.map(q => /*#__PURE__*/React.createElement("div", {
+  }, "Listening"), /*#__PURE__*/React.createElement("option", {
+    value: "Writing"
+  }, "Writing")))), /*#__PURE__*/React.createElement("h2", null, test.title), section === 'Writing' ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, test.prompt), /*#__PURE__*/React.createElement("textarea", {
+    value: essay,
+    onChange: e => setEssay(e.target.value),
+    rows: 10,
+    cols: 60
+  })) : test.questions.map(q => /*#__PURE__*/React.createElement("div", {
     key: q.id
   }, /*#__PURE__*/React.createElement("p", null, q.prompt), q.audio_url && /*#__PURE__*/React.createElement("audio", {
     controls: true,
