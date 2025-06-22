@@ -1,4 +1,4 @@
-export default function Dashboard({ user }) {
+const _jsxFileName = "frontend/src/components/Dashboard.jsx";export default function Dashboard({ user }) {
   const [data, setData] = React.useState(null);
 
   React.useEffect(() => {
@@ -8,87 +8,87 @@ export default function Dashboard({ user }) {
       .then(setData);
   }, [user]);
 
-  if (!user) return <p>Please create your profile.</p>;
+  if (!user) return React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 11}}, "Please create your profile."   );
 
   return (
-    <div>
-      <h2>Dashboard</h2>
-      {data ? (
-        <div className="row g-3">
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Exam Ready</h5>
-                <ul className="list-unstyled mb-0">
-                  <li>IELTS: {data.exam_ready.ielts ? 'Yes' : 'No'}</li>
-                  <li>HSK: {data.exam_ready.hsk ? 'Yes' : 'No'}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Skill Profile</h5>
-                <table className="table table-sm">
-                  <thead>
-                    <tr>
-                      <th>Skill</th>
-                      <th>Mastery %</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.skill_profile.map(p => (
-                      <tr key={p.skill}>
-                        <td>{p.skill}</td>
-                        <td>{p.pct.toFixed(1)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Recommended Tasks</h5>
-                <ul className="mb-0">
-                  {data.recommended_tasks.map((t, i) => (
-                    <li key={i}>{t}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Recent Scores</h5>
-                <ul className="mb-0">
-                  {data.latest_scores.map((s, i) => (
-                    <li key={i}>{s.label}: {s.score.toFixed(1)}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">Study Time (Last 7 Days)</h5>
-                <ul className="mb-0">
-                  {data.study_time.map(item => (
-                    <li key={item.date}>{item.date}: {item.minutes}m</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+    React.createElement('div', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 14}}
+      , React.createElement('h2', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 15}}, "Dashboard")
+      , data ? (
+        React.createElement('div', { className: "row g-3" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 17}}
+          , React.createElement('div', { className: "col-md-6 col-lg-4" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 18}}
+            , React.createElement('div', { className: "card h-100" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 19}}
+              , React.createElement('div', { className: "card-body", __self: this, __source: {fileName: _jsxFileName, lineNumber: 20}}
+                , React.createElement('h5', { className: "card-title", __self: this, __source: {fileName: _jsxFileName, lineNumber: 21}}, "Exam Ready" )
+                , React.createElement('ul', { className: "list-unstyled mb-0" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 22}}
+                  , React.createElement('li', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 23}}, "IELTS: " , data.exam_ready.ielts ? 'Yes' : 'No')
+                  , React.createElement('li', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 24}}, "HSK: " , data.exam_ready.hsk ? 'Yes' : 'No')
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 29}}
+            , React.createElement('div', { className: "card h-100" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 30}}
+              , React.createElement('div', { className: "card-body", __self: this, __source: {fileName: _jsxFileName, lineNumber: 31}}
+                , React.createElement('h5', { className: "card-title", __self: this, __source: {fileName: _jsxFileName, lineNumber: 32}}, "Skill Profile" )
+                , React.createElement('table', { className: "table table-sm" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 33}}
+                  , React.createElement('thead', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 34}}
+                    , React.createElement('tr', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 35}}
+                      , React.createElement('th', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 36}}, "Skill")
+                      , React.createElement('th', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 37}}, "Mastery %" )
+                    )
+                  )
+                  , React.createElement('tbody', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 40}}
+                    , data.skill_profile.map(p => (
+                      React.createElement('tr', { key: p.skill, __self: this, __source: {fileName: _jsxFileName, lineNumber: 42}}
+                        , React.createElement('td', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 43}}, p.skill)
+                        , React.createElement('td', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 44}}, p.pct.toFixed(1))
+                      )
+                    ))
+                  )
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 52}}
+            , React.createElement('div', { className: "card h-100" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 53}}
+              , React.createElement('div', { className: "card-body", __self: this, __source: {fileName: _jsxFileName, lineNumber: 54}}
+                , React.createElement('h5', { className: "card-title", __self: this, __source: {fileName: _jsxFileName, lineNumber: 55}}, "Recommended Tasks" )
+                , React.createElement('ul', { className: "mb-0", __self: this, __source: {fileName: _jsxFileName, lineNumber: 56}}
+                  , data.recommended_tasks.map((t, i) => (
+                    React.createElement('li', { key: i, __self: this, __source: {fileName: _jsxFileName, lineNumber: 58}}, t)
+                  ))
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 64}}
+            , React.createElement('div', { className: "card h-100" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 65}}
+              , React.createElement('div', { className: "card-body", __self: this, __source: {fileName: _jsxFileName, lineNumber: 66}}
+                , React.createElement('h5', { className: "card-title", __self: this, __source: {fileName: _jsxFileName, lineNumber: 67}}, "Recent Scores" )
+                , React.createElement('ul', { className: "mb-0", __self: this, __source: {fileName: _jsxFileName, lineNumber: 68}}
+                  , data.latest_scores.map((s, i) => (
+                    React.createElement('li', { key: i, __self: this, __source: {fileName: _jsxFileName, lineNumber: 70}}, s.label, ": " , s.score.toFixed(1))
+                  ))
+                )
+              )
+            )
+          )
+          , React.createElement('div', { className: "col-md-6 col-lg-4" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 76}}
+            , React.createElement('div', { className: "card h-100" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 77}}
+              , React.createElement('div', { className: "card-body", __self: this, __source: {fileName: _jsxFileName, lineNumber: 78}}
+                , React.createElement('h5', { className: "card-title", __self: this, __source: {fileName: _jsxFileName, lineNumber: 79}}, "Study Time (Last 7 Days)"    )
+                , React.createElement('ul', { className: "mb-0", __self: this, __source: {fileName: _jsxFileName, lineNumber: 80}}
+                  , data.study_time.map(item => (
+                    React.createElement('li', { key: item.date, __self: this, __source: {fileName: _jsxFileName, lineNumber: 82}}, item.date, ": " , item.minutes, "m")
+                  ))
+                )
+              )
+            )
+          )
+        )
       ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+        React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 90}}, "Loading...")
+      )
+    )
   );
 }

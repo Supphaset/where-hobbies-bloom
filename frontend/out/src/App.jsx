@@ -1,4 +1,4 @@
-import CreateUser from './components/CreateUser.jsx';
+const _jsxFileName = "frontend/src/App.jsx";import CreateUser from './components/CreateUser.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import Exams from './components/Exams.jsx';
 import PracticeDrills from './components/PracticeDrills.jsx';
@@ -17,15 +17,15 @@ export default function App() {
   }, []);
 
   return (
-    <HashRouter>
-      <Layout>
-        <Switch>
-          <Route path="/setup" render={() => <CreateUser onCreated={setUser} />} />
-          <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <Redirect to="/setup" />} />
-          <Route path="/exams" render={() => user ? <Exams user={user} /> : <Redirect to="/setup" />} />
-          <Route path="/practice" render={() => user ? <PracticeDrills user={user} /> : <Redirect to="/setup" />} />
-        </Switch>
-      </Layout>
-    </HashRouter>
+    React.createElement(HashRouter, {__self: this, __source: {fileName: _jsxFileName, lineNumber: 20}}
+      , React.createElement(Layout, {__self: this, __source: {fileName: _jsxFileName, lineNumber: 21}}
+        , React.createElement(Switch, {__self: this, __source: {fileName: _jsxFileName, lineNumber: 22}}
+          , React.createElement(Route, { path: "/setup", render: () => React.createElement(CreateUser, { onCreated: setUser, __self: this, __source: {fileName: _jsxFileName, lineNumber: 23}} ), __self: this, __source: {fileName: _jsxFileName, lineNumber: 23}} )
+          , React.createElement(Route, { exact: true, path: "/", render: () => user ? React.createElement(Dashboard, { user: user, __self: this, __source: {fileName: _jsxFileName, lineNumber: 24}} ) : React.createElement(CreateUser, { onCreated: setUser, __self: this, __source: {fileName: _jsxFileName, lineNumber: 24}} ), __self: this, __source: {fileName: _jsxFileName, lineNumber: 24}} )
+          , React.createElement(Route, { path: "/exams", render: () => user ? React.createElement(Exams, { user: user, __self: this, __source: {fileName: _jsxFileName, lineNumber: 25}} ) : React.createElement(Redirect, { to: "/setup", __self: this, __source: {fileName: _jsxFileName, lineNumber: 25}} ), __self: this, __source: {fileName: _jsxFileName, lineNumber: 25}} )
+          , React.createElement(Route, { path: "/practice", render: () => user ? React.createElement(PracticeDrills, { user: user, __self: this, __source: {fileName: _jsxFileName, lineNumber: 26}} ) : React.createElement(Redirect, { to: "/setup", __self: this, __source: {fileName: _jsxFileName, lineNumber: 26}} ), __self: this, __source: {fileName: _jsxFileName, lineNumber: 26}} )
+        )
+      )
+    )
   );
 }
