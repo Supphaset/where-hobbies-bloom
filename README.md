@@ -14,6 +14,18 @@ This repository contains a small [FastAPI](https://fastapi.tiangolo.com/) applic
    ```
    The API will be available at [http://127.0.0.1:8000](http://127.0.0.1:8000). The `/ping` endpoint returns a simple health check.
 
+  The root URL serves a React single-page application with pages for a
+  dashboard, exams, and practice drills. Static assets live under `/static`
+  and require the server to be running.
+
+   Additional endpoints:
+   - `POST /users/` – create a user.
+   - `GET /users/` – list all users.
+   - `GET /users/{user_id}` – retrieve a user by ID.
+   - `GET /exams/IELTS` – fetch the sample IELTS exam with questions.
+   - `POST /exams/IELTS/submit` – submit answers and record an attempt.
+   - `GET /dashboard/{user_id}` – show skill profile and exam-ready status.
+
 3. **Run tests** *(optional)*
    ```bash
    pytest -q
