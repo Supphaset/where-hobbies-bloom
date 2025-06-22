@@ -62,18 +62,22 @@ export default function Exams({ user }) {
   if (!test) return <p>Loading...</p>;
 
   return (
-    <div>
-      <div>
-        <label>
-          Section:
-          <select value={section} onChange={e => setSection(e.target.value)}>
+    <div className="mt-4">
+      <div className="mb-3">
+        <label className="form-label">
+          Section
+          <select
+            className="form-select"
+            value={section}
+            onChange={e => setSection(e.target.value)}
+          >
             <option value="Reading">Reading</option>
             <option value="Listening">Listening</option>
             <option value="Writing">Writing</option>
           </select>
         </label>
       </div>
-      <h2>{test.title}</h2>
+      <h2 className="mb-3">{test.title}</h2>
       {section === 'Writing' ? (
         <div>
           <p>{test.prompt}</p>
@@ -92,20 +96,21 @@ export default function Exams({ user }) {
               <audio controls src={q.audio_url}></audio>
             )}
             {JSON.parse(q.options_json).map(opt => (
-              <label key={opt}>
+              <div className="form-check" key={opt}>
                 <input
                   type="radio"
+                  className="form-check-input"
                   name={q.id}
                   value={opt}
                   onChange={e => setAnswers({ ...answers, [q.id]: e.target.value })}
                 />
-                {opt}
-              </label>
+                <label className="form-check-label">{opt}</label>
+              </div>
             ))}
           </div>
         ))
       )}
-      <button onClick={handleSubmit}>Submit</button>
+      <button onClick={handleSubmit} className="btn btn-primary mt-3">Submit</button>
       {score !== null && (
         <div>
           <p><strong>Your score: {score}</strong></p>
