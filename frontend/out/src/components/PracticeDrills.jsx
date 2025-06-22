@@ -1,4 +1,4 @@
-export default function PracticeDrills({ user }) {
+const _jsxFileName = "frontend/src/components/PracticeDrills.jsx";export default function PracticeDrills({ user }) {
   const [vocab, setVocab] = React.useState(null);
   const [grammar, setGrammar] = React.useState(null);
   const [grammarResult, setGrammarResult] = React.useState(null);
@@ -64,49 +64,49 @@ export default function PracticeDrills({ user }) {
   };
 
   return (
-    <div className="mt-4">
-      <h2 className="mb-3">Practice Drills</h2>
-      <div className="mb-4">
-        <h3>Vocabulary</h3>
-        {vocab ? (
-          <div>
-            <p>{vocab.word} - {vocab.definition}</p>
-            <button onClick={() => handleVocab(true)} className="btn btn-success me-2">Know</button>
-            <button onClick={() => handleVocab(false)} className="btn btn-secondary">Don't Know</button>
-          </div>
+    React.createElement('div', { className: "mt-4", __self: this, __source: {fileName: _jsxFileName, lineNumber: 67}}
+      , React.createElement('h2', { className: "mb-3", __self: this, __source: {fileName: _jsxFileName, lineNumber: 68}}, "Practice Drills" )
+      , React.createElement('div', { className: "mb-4", __self: this, __source: {fileName: _jsxFileName, lineNumber: 69}}
+        , React.createElement('h3', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 70}}, "Vocabulary")
+        , vocab ? (
+          React.createElement('div', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 72}}
+            , React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 73}}, vocab.word, " - "  , vocab.definition)
+            , React.createElement('button', { onClick: () => handleVocab(true), className: "btn btn-success me-2"  , __self: this, __source: {fileName: _jsxFileName, lineNumber: 74}}, "Know")
+            , React.createElement('button', { onClick: () => handleVocab(false), className: "btn btn-secondary" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 75}}, "Don't Know" )
+          )
         ) : (
-          <button onClick={() => fetch(`/drills/vocab/${user.id}`).then(res => res.json()).then(setVocab)} className="btn btn-primary">Start</button>
-        )}
-      </div>
-      <div className="mb-4">
-        <h3>Grammar</h3>
-        {grammar ? (
-          <div>
-            <p>{grammar.prompt}</p>
-            {grammar.options.map(opt => (
-              <button key={opt} onClick={() => answerGrammar(opt)} className="btn btn-outline-primary me-2 mb-2">{opt}</button>
-            ))}
-            {grammarResult !== null && (
-              <span className="ms-2">{grammarResult ? 'Correct!' : 'Try again'}</span>
-            )}
-          </div>
+          React.createElement('button', { onClick: () => fetch(`/drills/vocab/${user.id}`).then(res => res.json()).then(setVocab), className: "btn btn-primary" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 78}}, "Start")
+        )
+      )
+      , React.createElement('div', { className: "mb-4", __self: this, __source: {fileName: _jsxFileName, lineNumber: 81}}
+        , React.createElement('h3', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 82}}, "Grammar")
+        , grammar ? (
+          React.createElement('div', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 84}}
+            , React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 85}}, grammar.prompt)
+            , grammar.options.map(opt => (
+              React.createElement('button', { key: opt, onClick: () => answerGrammar(opt), className: "btn btn-outline-primary me-2 mb-2"   , __self: this, __source: {fileName: _jsxFileName, lineNumber: 87}}, opt)
+            ))
+            , grammarResult !== null && (
+              React.createElement('span', { className: "ms-2", __self: this, __source: {fileName: _jsxFileName, lineNumber: 90}}, grammarResult ? 'Correct!' : 'Try again')
+            )
+          )
         ) : (
-          <button onClick={() => fetch(`/drills/grammar/${user.id}`).then(res => res.json()).then(setGrammar)} className="btn btn-primary">Start</button>
-        )}
-      </div>
-      <div className="mb-4">
-        <h3>Quick Write</h3>
-        {quickPrompt ? (
-          <div>
-            <p>{quickPrompt}</p>
-            <textarea value={essay} onChange={e => setEssay(e.target.value)} rows={5} className="form-control mb-2" />
-            <button onClick={submitQuick} className="btn btn-primary">Submit</button>
-            {feedback && <pre className="mt-2">{JSON.stringify(feedback, null, 2)}</pre>}
-          </div>
+          React.createElement('button', { onClick: () => fetch(`/drills/grammar/${user.id}`).then(res => res.json()).then(setGrammar), className: "btn btn-primary" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 94}}, "Start")
+        )
+      )
+      , React.createElement('div', { className: "mb-4", __self: this, __source: {fileName: _jsxFileName, lineNumber: 97}}
+        , React.createElement('h3', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 98}}, "Quick Write" )
+        , quickPrompt ? (
+          React.createElement('div', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 100}}
+            , React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 101}}, quickPrompt)
+            , React.createElement('textarea', { value: essay, onChange: e => setEssay(e.target.value), rows: 5, className: "form-control mb-2" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 102}} )
+            , React.createElement('button', { onClick: submitQuick, className: "btn btn-primary" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 103}}, "Submit")
+            , feedback && React.createElement('pre', { className: "mt-2", __self: this, __source: {fileName: _jsxFileName, lineNumber: 104}}, JSON.stringify(feedback, null, 2))
+          )
         ) : (
-          <button onClick={fetchQuickPrompt} className="btn btn-primary">New Prompt</button>
-        )}
-      </div>
-    </div>
+          React.createElement('button', { onClick: fetchQuickPrompt, className: "btn btn-primary" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 107}}, "New Prompt" )
+        )
+      )
+    )
   );
 }

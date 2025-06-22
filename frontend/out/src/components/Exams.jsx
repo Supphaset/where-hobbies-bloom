@@ -1,4 +1,4 @@
-export default function Exams({ user }) {
+const _jsxFileName = "frontend/src/components/Exams.jsx";export default function Exams({ user }) {
   const [test, setTest] = React.useState(null);
   const [answers, setAnswers] = React.useState({});
   const [score, setScore] = React.useState(null);
@@ -58,76 +58,76 @@ export default function Exams({ user }) {
     }
   };
 
-  if (!user) return <p>Please create your profile first.</p>;
-  if (!test) return <p>Loading...</p>;
+  if (!user) return React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 61}}, "Please create your profile first."    );
+  if (!test) return React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 62}}, "Loading...");
 
   return (
-    <div className="mt-4">
-      <div className="mb-3">
-        <label className="form-label">
-          Section
-          <select
-            className="form-select"
-            value={section}
-            onChange={e => setSection(e.target.value)}
-          >
-            <option value="Reading">Reading</option>
-            <option value="Listening">Listening</option>
-            <option value="Writing">Writing</option>
-          </select>
-        </label>
-      </div>
-      <h2 className="mb-3">{test.title}</h2>
-      {section === 'Writing' ? (
-        <div>
-          <p>{test.prompt}</p>
-          <textarea
-            value={essay}
-            onChange={e => setEssay(e.target.value)}
-            rows={10}
-            cols={60}
-          />
-        </div>
+    React.createElement('div', { className: "mt-4", __self: this, __source: {fileName: _jsxFileName, lineNumber: 65}}
+      , React.createElement('div', { className: "mb-3", __self: this, __source: {fileName: _jsxFileName, lineNumber: 66}}
+        , React.createElement('label', { className: "form-label", __self: this, __source: {fileName: _jsxFileName, lineNumber: 67}}, "Section"
+
+          , React.createElement('select', {
+            className: "form-select",
+            value: section,
+            onChange: e => setSection(e.target.value), __self: this, __source: {fileName: _jsxFileName, lineNumber: 69}}
+
+            , React.createElement('option', { value: "Reading", __self: this, __source: {fileName: _jsxFileName, lineNumber: 74}}, "Reading")
+            , React.createElement('option', { value: "Listening", __self: this, __source: {fileName: _jsxFileName, lineNumber: 75}}, "Listening")
+            , React.createElement('option', { value: "Writing", __self: this, __source: {fileName: _jsxFileName, lineNumber: 76}}, "Writing")
+          )
+        )
+      )
+      , React.createElement('h2', { className: "mb-3", __self: this, __source: {fileName: _jsxFileName, lineNumber: 80}}, test.title)
+      , section === 'Writing' ? (
+        React.createElement('div', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 82}}
+          , React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 83}}, test.prompt)
+          , React.createElement('textarea', {
+            value: essay,
+            onChange: e => setEssay(e.target.value),
+            rows: 10,
+            cols: 60, __self: this, __source: {fileName: _jsxFileName, lineNumber: 84}}
+          )
+        )
       ) : (
         test.questions.map(q => (
-          <div key={q.id}>
-            <p>{q.prompt}</p>
-            {q.audio_url && (
-              <audio controls src={q.audio_url}></audio>
-            )}
-            {JSON.parse(q.options_json).map(opt => (
-              <div className="form-check" key={opt}>
-                <input
-                  type="radio"
-                  className="form-check-input"
-                  name={q.id}
-                  value={opt}
-                  onChange={e => setAnswers({ ...answers, [q.id]: e.target.value })}
-                />
-                <label className="form-check-label">{opt}</label>
-              </div>
-            ))}
-          </div>
+          React.createElement('div', { key: q.id, __self: this, __source: {fileName: _jsxFileName, lineNumber: 93}}
+            , React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 94}}, q.prompt)
+            , q.audio_url && (
+              React.createElement('audio', { controls: true, src: q.audio_url, __self: this, __source: {fileName: _jsxFileName, lineNumber: 96}})
+            )
+            , JSON.parse(q.options_json).map(opt => (
+              React.createElement('div', { className: "form-check", key: opt, __self: this, __source: {fileName: _jsxFileName, lineNumber: 99}}
+                , React.createElement('input', {
+                  type: "radio",
+                  className: "form-check-input",
+                  name: q.id,
+                  value: opt,
+                  onChange: e => setAnswers({ ...answers, [q.id]: e.target.value }), __self: this, __source: {fileName: _jsxFileName, lineNumber: 100}}
+                )
+                , React.createElement('label', { className: "form-check-label", __self: this, __source: {fileName: _jsxFileName, lineNumber: 107}}, opt)
+              )
+            ))
+          )
         ))
-      )}
-      <button onClick={handleSubmit} className="btn btn-primary mt-3">Submit</button>
-      {score !== null && (
-        <div>
-          <p><strong>Your score: {score}</strong></p>
-          {result && section === 'Writing' && (
-            <pre>{JSON.stringify(result.feedback, null, 2)}</pre>
-          )}
-          {result && section !== 'Writing' && (
-            <ul>
-              {result.answers.map(a => (
-                <li key={a.question_id}>
-                  Q{a.question_id}: {a.correct ? '✓' : '✗'} (you: {a.response})
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
+      )
+      , React.createElement('button', { onClick: handleSubmit, className: "btn btn-primary mt-3"  , __self: this, __source: {fileName: _jsxFileName, lineNumber: 113}}, "Submit")
+      , score !== null && (
+        React.createElement('div', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 115}}
+          , React.createElement('p', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 116}}, React.createElement('strong', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 116}}, "Your score: "  , score))
+          , result && section === 'Writing' && (
+            React.createElement('pre', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 118}}, JSON.stringify(result.feedback, null, 2))
+          )
+          , result && section !== 'Writing' && (
+            React.createElement('ul', {__self: this, __source: {fileName: _jsxFileName, lineNumber: 121}}
+              , result.answers.map(a => (
+                React.createElement('li', { key: a.question_id, __self: this, __source: {fileName: _jsxFileName, lineNumber: 123}}, "Q"
+                  , a.question_id, ": " , a.correct ? '✓' : '✗', " (you: "  , a.response, ")"
+                )
+              ))
+            )
+          )
+        )
+      )
+    )
   );
 }

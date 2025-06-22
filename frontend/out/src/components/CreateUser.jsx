@@ -1,4 +1,5 @@
-export default function CreateUser({ onCreated }) {
+
+const _jsxFileName = "frontend/src/components/CreateUser.jsx";export default function CreateUser({ onCreated }) {
   const [name, setName] = React.useState('');
   const [ielts, setIelts] = React.useState(6);
   const [hsk, setHsk] = React.useState(180);
@@ -18,44 +19,44 @@ export default function CreateUser({ onCreated }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
-      <h2 className="mb-3">Welcome to SoloLingua Coach</h2>
-      <div className="mb-3">
-        <label className="form-label">
-          Name
-          <input
-            className="form-control"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <div className="mb-3">
-        <label className="form-label">
-          Target IELTS
-          <input
-            type="number"
-            className="form-control"
-            value={ielts}
-            onChange={e => setIelts(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <div className="mb-3">
-        <label className="form-label">
-          Target HSK
-          <input
-            type="number"
-            className="form-control"
-            value={hsk}
-            onChange={e => setHsk(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <button type="submit" className="btn btn-primary">Create Profile</button>
-    </form>
+    React.createElement('form', { onSubmit: handleSubmit, className: "mt-4", __self: this, __source: {fileName: _jsxFileName, lineNumber: 21}}
+      , React.createElement('h2', { className: "mb-3", __self: this, __source: {fileName: _jsxFileName, lineNumber: 22}}, "Welcome to SoloLingua Coach"   )
+      , React.createElement('div', { className: "mb-3", __self: this, __source: {fileName: _jsxFileName, lineNumber: 23}}
+        , React.createElement('label', { className: "form-label", __self: this, __source: {fileName: _jsxFileName, lineNumber: 24}}, "Name"
+
+          , React.createElement('input', {
+            className: "form-control",
+            value: name,
+            onChange: e => setName(e.target.value),
+            required: true, __self: this, __source: {fileName: _jsxFileName, lineNumber: 26}}
+          )
+        )
+      )
+      , React.createElement('div', { className: "mb-3", __self: this, __source: {fileName: _jsxFileName, lineNumber: 34}}
+        , React.createElement('label', { className: "form-label", __self: this, __source: {fileName: _jsxFileName, lineNumber: 35}}, "Target IELTS"
+
+          , React.createElement('input', {
+            type: "number",
+            className: "form-control",
+            value: ielts,
+            onChange: e => setIelts(e.target.value),
+            required: true, __self: this, __source: {fileName: _jsxFileName, lineNumber: 37}}
+          )
+        )
+      )
+      , React.createElement('div', { className: "mb-3", __self: this, __source: {fileName: _jsxFileName, lineNumber: 46}}
+        , React.createElement('label', { className: "form-label", __self: this, __source: {fileName: _jsxFileName, lineNumber: 47}}, "Target HSK"
+
+          , React.createElement('input', {
+            type: "number",
+            className: "form-control",
+            value: hsk,
+            onChange: e => setHsk(e.target.value),
+            required: true, __self: this, __source: {fileName: _jsxFileName, lineNumber: 49}}
+          )
+        )
+      )
+      , React.createElement('button', { type: "submit", className: "btn btn-primary" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 58}}, "Create Profile" )
+    )
   );
 }
