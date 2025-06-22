@@ -3,15 +3,17 @@ const { NavLink } = ReactRouterDOM;
 export default function Layout({ children }) {
   return (
     <div>
-      <header className="header">
-        <h1>SoloLingua Coach</h1>
-      </header>
-      <nav className="nav">
-        <NavLink exact to="/" activeClassName="active">Dashboard</NavLink>
-        <NavLink to="/exams" activeClassName="active">Exams</NavLink>
-        <NavLink to="/practice" activeClassName="active">Practice</NavLink>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div className="container-fluid">
+          <NavLink className="navbar-brand" to="/">SoloLingua</NavLink>
+          <div className="navbar-nav">
+            <NavLink exact to="/" className="nav-link" activeClassName="active">Dashboard</NavLink>
+            <NavLink to="/exams" className="nav-link" activeClassName="active">Exams</NavLink>
+            <NavLink to="/practice" className="nav-link" activeClassName="active">Practice</NavLink>
+          </div>
+        </div>
       </nav>
-      <div className="container">
+      <div className="container mt-4">
         {children}
       </div>
     </div>
