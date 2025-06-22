@@ -7,13 +7,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-try:
-    import openai
-except Exception:  # network/installation issues
-    openai = None
-
 MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 API_KEY = os.getenv("OPENAI_API_KEY")
+
+try:
+    from openai import OpenAI
+    openai_client = OpenAI(api_key = API_KEY)
+except Exception:  # network/installation issues
+    openai_client = None
+
 
 SYSTEM_PROMPT = "You are a certified IELTS Writing examiner. Return JSON with task_response, coherence, lexical, grammar, and overall_band."
 
@@ -27,10 +29,9 @@ def grade_speaking(transcript: str) -> Dict:
 
 def grade_essay(text: str) -> Dict:
     """Grade the essay with OpenAI or return a simple heuristic result."""
-    if openai and API_KEY:
+    if openai_client:
         try:
-            openai.api_key = API_KEY
-            resp = openai.ChatCompletion.create(
+            resp = openai_client.chat.completions.create(
                 model=MODEL,
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
@@ -40,8 +41,9 @@ def grade_essay(text: str) -> Dict:
             )
             content = resp.choices[0].message.content
             return json.loads(content)
-        except Exception:
-            pass
+        except Exception as e:
+            print("OpenAI error")
+            print(e)
     # fallback heuristic
     words = len(text.split())
     band = min(9, max(5, words // 50 + 5))
@@ -58,12 +60,11 @@ def grade_essay(text: str) -> Dict:
 def speaking_feedback(audio_bytes: bytes) -> Dict:
     """Transcribe audio with Whisper and grade speaking with GPT or heuristic."""
     transcript = ""
-    if openai and API_KEY:
+    if openai_client:
         try:
-            openai.api_key = API_KEY
-            resp = openai.Audio.transcribe("whisper-1", io.BytesIO(audio_bytes))
+            resp = openai_client.Audio.transcribe("whisper-1", io.BytesIO(audio_bytes))
             transcript = resp["text"]
-            chat = openai.ChatCompletion.create(
+            chat = openai_client.chat.completions(
                 model=MODEL,
                 messages=[
                     {
@@ -105,10 +106,9 @@ DEFAULT_GRAMMAR_QUESTIONS = [
 
 def generate_grammar_question() -> Dict:
     """Return a multiple-choice grammar question using GPT or fallback."""
-    if openai and API_KEY:
+    if openai_client:
         try:
-            openai.api_key = API_KEY
-            resp = openai.ChatCompletion.create(
+            resp = openai_client.chat.completions(
                 model=MODEL,
                 messages=[
                     {
@@ -167,10 +167,9 @@ DEFAULT_SPEAK_PROMPTS = [
 
 def _gpt_json(prompt: str) -> Dict | str:
     """Small helper for chat completion returning parsed JSON or raw text."""
-    if openai and API_KEY:
+    if openai_client:
         try:
-            openai.api_key = API_KEY
-            resp = openai.ChatCompletion.create(
+            resp = openai_client.chat.completions(
                 model=MODEL,
                 messages=[{"role": "system", "content": prompt}],
                 temperature=0,
