@@ -1,5 +1,8 @@
 import json
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+
+from . import ai_utils
 
 from . import models, schemas
 
@@ -56,6 +59,7 @@ def record_attempt(
     attempt.score = correct / total * 100
     db.commit()
     update_skill_profile(db, user_id, test.section.lower(), attempt.score)
+    record_study_session(db, user_id, 15)
     db.refresh(attempt)
     return attempt
 
@@ -122,4 +126,124 @@ def record_essay_attempt(
     db.commit()
     db.refresh(attempt)
     update_skill_profile(db, user_id, "writing", attempt.score)
+    record_study_session(db, user_id, 15)
     return attempt
+
+
+def record_study_session(db: Session, user_id: int, minutes: int) -> models.StudySession:
+    session = models.StudySession(user_id=user_id, minutes=minutes)
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+    return session
+
+
+def recent_scores(db: Session, user_id: int, limit: int = 5) -> list[dict]:
+    attempts = (
+        db.query(models.Attempt, models.Test.section)
+        .join(models.Test)
+        .filter(models.Attempt.user_id == user_id)
+        .order_by(models.Attempt.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    essays = (
+        db.query(models.EssayAttempt)
+        .filter(models.EssayAttempt.user_id == user_id)
+        .order_by(models.EssayAttempt.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    scores = [
+        {
+            "label": sec,
+            "score": att.score,
+            "created_at": att.created_at.isoformat(),
+        }
+        for att, sec in attempts
+    ] + [
+        {
+            "label": "Writing",
+            "score": essay.score,
+            "created_at": essay.created_at.isoformat(),
+        }
+        for essay in essays
+    ]
+    scores.sort(key=lambda x: x["created_at"], reverse=True)
+    return scores[:limit]
+
+
+def study_time_trend(db: Session, user_id: int, days: int = 7) -> list[dict]:
+    cutoff = datetime.utcnow().date().toordinal() - days + 1
+    sessions = (
+        db.query(models.StudySession)
+        .filter(models.StudySession.user_id == user_id)
+        .order_by(models.StudySession.created_at.desc())
+        .all()
+    )
+    totals = {}
+    for s in sessions:
+        day = s.created_at.date().isoformat()
+        if datetime.fromisoformat(day).date().toordinal() < cutoff:
+            continue
+        totals[day] = totals.get(day, 0) + s.minutes
+    trend = [
+        {"date": day, "minutes": totals.get(day, 0)}
+        for day in sorted(totals.keys())
+    ]
+    return trend
+
+
+def recommend_tasks(db: Session, user: models.User, top_n: int = 3) -> list[str]:
+    profile = (
+        db.query(models.SkillProfile)
+        .filter(models.SkillProfile.user_id == user.id)
+        .all()
+    )
+    gaps = sorted(profile, key=lambda p: p.mastery_pct)
+    return [f"Practice {p.skill_code.title()}" for p in gaps[:top_n]]
+
+
+def next_vocab_item(db: Session, user_id: int) -> models.Vocabulary | None:
+    progress = (
+        db.query(models.VocabProgress)
+        .filter(models.VocabProgress.user_id == user_id)
+        .order_by(models.VocabProgress.next_due)
+        .first()
+    )
+    if progress and progress.next_due <= datetime.utcnow():
+        return db.get(models.Vocabulary, progress.vocab_id)
+    vocab = db.query(models.Vocabulary).first()
+    if vocab and not progress:
+        db.add(
+            models.VocabProgress(user_id=user_id, vocab_id=vocab.id)
+        )
+        db.commit()
+        return vocab
+    return progress and db.get(models.Vocabulary, progress.vocab_id)
+
+
+def update_vocab_progress(db: Session, user_id: int, vocab_id: int, correct: bool) -> None:
+    progress = (
+        db.query(models.VocabProgress)
+        .filter_by(user_id=user_id, vocab_id=vocab_id)
+        .first()
+    )
+    if not progress:
+        progress = models.VocabProgress(user_id=user_id, vocab_id=vocab_id)
+        db.add(progress)
+    if correct:
+        progress.interval = min(progress.interval * 2, 30)
+    else:
+        progress.interval = 1
+    progress.next_due = datetime.utcnow() + timedelta(days=progress.interval)
+    db.commit()
+    record_study_session(db, user_id, 1)
+
+
+def grade_speaking(transcript: str) -> dict:
+    return ai_utils.grade_speaking(transcript)
+
+
+def speaking_feedback(audio_bytes: bytes) -> dict:
+    return ai_utils.speaking_feedback(audio_bytes)

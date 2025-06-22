@@ -26,7 +26,7 @@ export default function App() {
         <Route path="/setup" render={() => <CreateUser onCreated={setUser} />} />
         <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <Redirect to="/setup" />} />
         <Route path="/exams" render={() => user ? <Exams user={user} /> : <Redirect to="/setup" />} />
-        <Route path="/practice" render={() => <PracticeDrills />} />
+        <Route path="/practice" render={() => user ? <PracticeDrills user={user} /> : <Redirect to="/setup" />} />
       </Switch>
     </HashRouter>
   );

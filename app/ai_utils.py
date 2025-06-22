@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Dict
+import io
 
 try:
     import openai
@@ -11,6 +12,13 @@ MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 API_KEY = os.getenv("OPENAI_API_KEY")
 
 SYSTEM_PROMPT = "You are a certified IELTS Writing examiner. Return JSON with task_response, coherence, lexical, grammar, and overall_band."
+
+
+def grade_speaking(transcript: str) -> Dict:
+    """Return simple fluency feedback based on word count."""
+    words = len(transcript.split())
+    band = min(9, max(5, words // 50 + 5))
+    return {"fluency_band": band}
 
 
 def grade_essay(text: str) -> Dict:
@@ -41,3 +49,33 @@ def grade_essay(text: str) -> Dict:
         "overall_band": band,
     }
     return feedback
+
+
+def speaking_feedback(audio_bytes: bytes) -> Dict:
+    """Transcribe audio with Whisper and grade speaking with GPT or heuristic."""
+    transcript = ""
+    if openai and API_KEY:
+        try:
+            openai.api_key = API_KEY
+            resp = openai.Audio.transcribe("whisper-1", io.BytesIO(audio_bytes))
+            transcript = resp["text"]
+            chat = openai.ChatCompletion.create(
+                model=MODEL,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an IELTS Speaking examiner. Return JSON with fluency_band and a short comment.",
+                    },
+                    {"role": "user", "content": transcript},
+                ],
+                temperature=0,
+            )
+            content = chat.choices[0].message.content
+            data = json.loads(content)
+            data["transcript"] = transcript
+            return data
+        except Exception:
+            pass
+    words = len(transcript.split()) if transcript else 0
+    band = min(9, max(5, words // 50 + 5))
+    return {"transcript": transcript, "fluency_band": band}
