@@ -2,57 +2,30 @@ import CreateUser from './components/CreateUser.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import Exams from './components/Exams.jsx';
 import PracticeDrills from './components/PracticeDrills.jsx';
-const {
-  HashRouter,
-  Route,
-  Switch,
-  NavLink,
-  Redirect
-} = ReactRouterDOM;
+import Layout from './Layout.jsx';
+
+const { HashRouter, Route, Switch, Redirect } = ReactRouterDOM;
+
 export default function App() {
   const [user, setUser] = React.useState(null);
+
   React.useEffect(() => {
     const stored = localStorage.getItem('sololingua_user');
     if (stored) {
       setUser(JSON.parse(stored));
     }
   }, []);
-  return /*#__PURE__*/React.createElement(HashRouter, null, /*#__PURE__*/React.createElement("nav", null, /*#__PURE__*/React.createElement(NavLink, {
-    exact: true,
-    to: "/",
-    activeClassName: "active"
-  }, "Dashboard"), ' | ', /*#__PURE__*/React.createElement(NavLink, {
-    to: "/exams",
-    activeClassName: "active"
-  }, "Exams"), ' | ', /*#__PURE__*/React.createElement(NavLink, {
-    to: "/practice",
-    activeClassName: "active"
-  }, "Practice")), /*#__PURE__*/React.createElement(Switch, null, /*#__PURE__*/React.createElement(Route, {
-    path: "/setup",
-    render: () => /*#__PURE__*/React.createElement(CreateUser, {
-      onCreated: setUser
-    })
-  }), /*#__PURE__*/React.createElement(Route, {
-    exact: true,
-    path: "/",
-    render: () => user ? /*#__PURE__*/React.createElement(Dashboard, {
-      user: user
-    }) : /*#__PURE__*/React.createElement(Redirect, {
-      to: "/setup"
-    })
-  }), /*#__PURE__*/React.createElement(Route, {
-    path: "/exams",
-    render: () => user ? /*#__PURE__*/React.createElement(Exams, {
-      user: user
-    }) : /*#__PURE__*/React.createElement(Redirect, {
-      to: "/setup"
-    })
-  }), /*#__PURE__*/React.createElement(Route, {
-    path: "/practice",
-    render: () => user ? /*#__PURE__*/React.createElement(PracticeDrills, {
-      user: user
-    }) : /*#__PURE__*/React.createElement(Redirect, {
-      to: "/setup"
-    })
-  })));
+
+  return (
+    <HashRouter>
+      <Layout>
+        <Switch>
+          <Route path="/setup" render={() => <CreateUser onCreated={setUser} />} />
+          <Route exact path="/" render={() => user ? <Dashboard user={user} /> : <Redirect to="/setup" />} />
+          <Route path="/exams" render={() => user ? <Exams user={user} /> : <Redirect to="/setup" />} />
+          <Route path="/practice" render={() => user ? <PracticeDrills user={user} /> : <Redirect to="/setup" />} />
+        </Switch>
+      </Layout>
+    </HashRouter>
+  );
 }
