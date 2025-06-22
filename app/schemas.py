@@ -1,9 +1,11 @@
 from pydantic import BaseModel
 
+
 class UserCreate(BaseModel):
     name: str
     target_ielts: int
     target_hsk: int
+
 
 class User(UserCreate):
     id: int
@@ -41,10 +43,18 @@ class AnswerCreate(BaseModel):
     response: str
 
 
+class Answer(AnswerCreate):
+    correct: bool
+
+    class Config:
+        orm_mode = True
+
+
 class Attempt(BaseModel):
     id: int
     test_id: int
     score: float
+    answers: list[Answer] = []
 
     class Config:
         orm_mode = True
@@ -53,3 +63,17 @@ class Attempt(BaseModel):
 class ExamSubmission(BaseModel):
     user_id: int
     answers: list[AnswerCreate]
+
+
+class EssaySubmission(BaseModel):
+    user_id: int
+    text: str
+
+
+class EssayAttempt(BaseModel):
+    id: int
+    score: float
+    feedback: dict
+
+    class Config:
+        orm_mode = True
