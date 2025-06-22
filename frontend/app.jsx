@@ -25,19 +25,24 @@ function Exams() {
   const [test, setTest] = React.useState(null);
   const [answers, setAnswers] = React.useState({});
   const [score, setScore] = React.useState(null);
+  const [section, setSection] = React.useState('Reading');
 
   React.useEffect(() => {
-    fetch('/exams/IELTS')
+    fetch(`/exams/IELTS/${section}`)
       .then(res => res.json())
-      .then(setTest);
-  }, []);
+      .then(data => {
+        setTest(data);
+        setAnswers({});
+        setScore(null);
+      });
+  }, [section]);
 
   const handleSubmit = () => {
     const payload = {
       user_id: 1,
       answers: Object.entries(answers).map(([question_id, response]) => ({ question_id: parseInt(question_id), response }))
     };
-    fetch('/exams/IELTS/submit', {
+    fetch(`/exams/IELTS/${section}/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -48,10 +53,22 @@ function Exams() {
 
   return (
     <div>
+      <div>
+        <label>
+          Section:
+          <select value={section} onChange={e => setSection(e.target.value)}>
+            <option value="Reading">Reading</option>
+            <option value="Listening">Listening</option>
+          </select>
+        </label>
+      </div>
       <h2>{test.title}</h2>
       {test.questions.map(q => (
         <div key={q.id}>
           <p>{q.prompt}</p>
+          {q.audio_url && (
+            <audio controls src={q.audio_url}></audio>
+          )}
           {JSON.parse(q.options_json).map(opt => (
             <label key={opt}>
               <input

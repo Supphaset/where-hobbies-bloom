@@ -33,6 +33,7 @@ class Question(Base):
     options_json = Column(String)
     answer_key = Column(String)
     skill_code = Column(String)
+    audio_url = Column(String, nullable=True)
     test = relationship("Test", back_populates="questions")
 
 

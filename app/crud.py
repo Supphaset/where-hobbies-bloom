@@ -21,8 +21,12 @@ def list_users(db: Session) -> list[models.User]:
     return db.query(models.User).all()
 
 
-def get_test(db: Session, exam_type: str) -> models.Test | None:
-    return db.query(models.Test).filter(models.Test.exam_type == exam_type).first()
+def get_test(db: Session, exam_type: str, section: str) -> models.Test | None:
+    return (
+        db.query(models.Test)
+        .filter(models.Test.exam_type == exam_type, models.Test.section == section)
+        .first()
+    )
 
 
 def record_attempt(
@@ -34,7 +38,8 @@ def record_attempt(
     db.commit()
     db.refresh(attempt)
     for ans in answers:
-        q = db.query(models.Question).get(ans.question_id)
+        # SQLAlchemy 2.x recommends Session.get rather than Query.get
+        q = db.get(models.Question, ans.question_id)
         is_correct = q and q.answer_key == ans.response
         db.add(
             models.Answer(
@@ -49,7 +54,7 @@ def record_attempt(
     total = len(answers) or 1
     attempt.score = correct / total * 100
     db.commit()
-    update_skill_profile(db, user_id, "reading", attempt.score)
+    update_skill_profile(db, user_id, test.section.lower(), attempt.score)
     db.refresh(attempt)
     return attempt
 
