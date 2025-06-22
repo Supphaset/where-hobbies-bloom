@@ -1,46 +1,17 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
 }
+
 .header {
-    background: #333;
-    color: #fff;
-    padding: 1rem;
+    margin-bottom: 1rem;
 }
-.nav {
-    background: #f2f2f2;
-    padding: 0.5rem 1rem;
-}
-.nav a {
-    margin-right: 1rem;
-    text-decoration: none;
-    color: #0366d6;
-}
-.nav a.active {
-    font-weight: bold;
-    text-decoration: underline;
-}
-.container {
-    padding: 1rem;
-    max-width: 800px;
-    margin: 0 auto;
-}
+
 .card-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
 }
-.card {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 1rem;
+
+.card-grid .card {
     flex: 1 1 240px;
-}
-table {
-    border-collapse: collapse;
-    margin-top: 1rem;
-}
-th, td {
-    border: 1px solid #ccc;
-    padding: 0.25rem 0.5rem;
 }
